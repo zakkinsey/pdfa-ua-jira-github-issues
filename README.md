@@ -24,6 +24,7 @@ JIRA_USER=foo
 JIRA_PASSWORD=bar
 GITHUB_USERNAME=name of the user importing the tickets
 GITHUB_TOKEN=token for the user, propably requires admin token with everything
+GITHUB_ORGANIZATION=name of the organization
 ```
 
 This repository contains all the scripts necessary for the migration.
