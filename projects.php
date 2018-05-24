@@ -2,6 +2,6 @@
 
 return [
     'AGATE' => 'agate',
-    //'OPAL' => 'opal',
-    //'MK' => 'mica2',
+    'OPAL' => 'opal',
+    'MK' => 'mica2',
 ];

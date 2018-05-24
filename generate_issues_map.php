@@ -1,8 +1,8 @@
 <?php
 
 $issueMap = [];
-// 'AGATE', 'OPAL', 'MK'
-foreach (['AGATE'] as $project) {
+
+foreach (['AGATE', 'OPAL', 'MK'] as $project) {
     $issueMap = array_merge($issueMap, json_decode(file_get_contents('data/' . $project . '.issues.json'), true));
 }
 
