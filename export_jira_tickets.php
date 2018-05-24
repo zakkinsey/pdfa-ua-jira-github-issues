@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctrine Github to Jira Migration
+ * Github to Jira Migration
  *
  * Step 2: Export all tickets from Jira into JSON file(s) on disk.
  *
@@ -34,12 +34,12 @@ if (!isset($projects[$project])) {
 
 $startAt = isset($argv[2]) ? (int)($argv[2]) : 0;
 $githubRepository = $projects[$project];
-$githubHeaders = ['User-Agent: Doctrine Jira Migration', 'Authorization: token ' . $_SERVER['GITHUB_TOKEN']];
+$githubHeaders = ['User-Agent: Jira Migration', 'Authorization: token ' . $_SERVER['GITHUB_TOKEN']];
 $jiraHeaders = ['Authorization: Basic ' . base64_encode(sprintf('%s:%s', $_SERVER['JIRA_USER'], $_SERVER['JIRA_PASSWORD']))];
 
 $client = new \Buzz\Browser();
 
-$response = $client->get('https://api.github.com/repos/doctrine/' . $githubRepository . '/milestones?state=all&per_page=100', $githubHeaders);
+$response = $client->get('https://api.github.com/repos/' . $_SERVER['GITHUB_ORGANIZATION'] . '/' . $githubRepository . '/milestones?state=all&per_page=100', $githubHeaders);
 if ($response->getStatusCode() !== 200) {
     printf("Could not fetch existing Github Milestones\n");
     var_dump($response->getContent());

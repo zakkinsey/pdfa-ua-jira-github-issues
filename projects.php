@@ -1,8 +1,7 @@
 <?php
 
 return [
-    'DDC' => 'doctrine2',
-    'DBAL' => 'dbal',
-    'DMIG' => 'migrations',
-    'DCOM' => 'common',
+    'AGATE' => 'agate',
+    //'OPAL' => 'opal',
+    //'MK' => 'mica2',
 ];

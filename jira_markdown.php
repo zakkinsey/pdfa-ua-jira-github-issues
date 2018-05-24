@@ -27,7 +27,8 @@ function toMarkdown($text) {
 
     $converted = preg_replace('/{noformat}/', '```', $converted);
 
-    $converted = preg_replace_callback('/((DBAL|DCOM|DDC|DMIG)+-([0-9]+))/', function ($matches) {
+    // AGATE|OPAL|MK
+    $converted = preg_replace_callback('/((AGATE)+-([0-9]+))/', function ($matches) {
         return '[' . $matches[1] . ']($_SERVER['JIRA_URL'] . '/jira/browse/' . $matches[1] . ')';
     }, $converted);
 
