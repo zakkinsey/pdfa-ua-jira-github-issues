@@ -69,7 +69,9 @@ $knownAssigneesMap = [
     'rbouchakri'      => 'Rima-B',
     'rroces'          => 'firone',
     'emorency'        => 'emorency',
-    'ctamisier'       => 'ctamisier'
+    'ctamisier'       => 'ctamisier',
+    'hudson'          => 'obiba-ci',
+    'delson'          => 'dwainelson'
 ];
 
 while (true) {
@@ -129,20 +131,20 @@ while (true) {
 
         $import['comments'] = [];
 
-        if (isset($issue['fields']['issuelinks']) && $issue['fields']['issuelinks']) {
+        /*if (isset($issue['fields']['issuelinks']) && $issue['fields']['issuelinks']) {
             $comment = "";
             foreach ($issue['fields']['issuelinks'] as $link) {
-                /*if (isset($link['inwardIssue'])) {
+                if (isset($link['inwardIssue'])) {
                     $comment .= sprintf("* %s [%s: %s](http://www.doctrine-project.org/jira/browse/%s)\n", $link['type']['inward'], $link['inwardIssue']['key'], $link['inwardIssue']['fields']['summary'], $link['inwardIssue']['key']);
                 } else if (isset($link['outwardIssue'])) {
                     $comment .= sprintf("* %s [%s: %s](http://www.doctrine-project.org/jira/browse/%s)\n", $link['type']['outward'], $link['outwardIssue']['key'], $link['outwardIssue']['fields']['summary'], $link['outwardIssue']['key']);
-                }*/
+                }
             }
             $import['comments'][] = [
                 'body' => $comment,
                 'created_at' => substr($issue['fields']['created'], 0, 19) . 'Z',
             ];
-        }
+        }*/
 
         if (isset($issue['fields']['comment']) && count($issue['fields']['comment']['comments']) > 0) {
             foreach ($issue['fields']['comment']['comments'] as $comment) {
