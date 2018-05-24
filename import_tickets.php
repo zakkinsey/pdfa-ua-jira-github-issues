@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctrine Jira to Github Migration
+ * Jira to Github Migration
  *
  * @example
  *
@@ -29,7 +29,7 @@ if (!isset($projects[$project])) {
 
 $githubRepository = $projects[$project];
 $githubHeaders = [
-    'User-Agent: Doctrine Jira Migration',
+    'User-Agent: Jira Migration',
     'Authorization: token ' . $_SERVER['GITHUB_TOKEN'],
     'Accept: application/vnd.github.golden-comet-preview+json'
 ];
@@ -84,7 +84,7 @@ foreach ($files as $file) {
     }
     //printf("debug skip\n"); continue;
 
-    $response = $client->post('https://api.github.com/repos/doctrine/' . $githubRepository . '/import/issues', $githubHeaders, json_encode($issue));
+    $response = $client->post('https://api.github.com/repos/' . $_SERVER['GITHUB_ORGANIZATION'] . '/' . $githubRepository . '/import/issues', $githubHeaders, json_encode($issue));
 
     if ($response->getStatusCode() >= 400) {
         printf("Error: " . $response->getContent());

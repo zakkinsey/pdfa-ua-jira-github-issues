@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctrine Jira to Github Migration
+ * Jira to Github Migration
  *
  * Step 1: Create a milestone for every Jira version in the Github Issue Tracker.
  *
@@ -30,7 +30,7 @@ if (!isset($projects[$project])) {
 }
 
 $githubRepository = $projects[$project];
-$githubHeaders = ['User-Agent: Doctrine Jira Migration', 'Authorization: token ' . $_SERVER['GITHUB_TOKEN']];
+$githubHeaders = ['User-Agent: Jira Migration', 'Authorization: token ' . $_SERVER['GITHUB_TOKEN']];
 
 $client = new \Buzz\Browser();
 
@@ -70,7 +70,7 @@ usort($milestones, function ($a, $b) {
     return version_compare($a['title'], $b['title']) * -1;
 });
 
-$response = $client->get('https://api.github.com/repos/doctrine/' . $githubRepository . '/milestones?state=all&per_page=100', $githubHeaders);
+$response = $client->get('https://api.github.com/repos/' . $_SERVER['GITHUB_ORGANIZATION'] . '/' . $githubRepository . '/milestones?state=all&per_page=100', $githubHeaders);
 if ($response->getStatusCode() !== 200) {
     printf("Could not fetch existing Github Milestones\n");
     var_dump($response->getContent());
@@ -88,7 +88,7 @@ foreach ($milestones as $milestone) {
         continue;
     }
 
-    $response = $client->post('https://api.github.com/repos/doctrine/' . $githubRepository . '/milestones', $githubHeaders, json_encode($milestone));
+    $response = $client->post('https://api.github.com/repos/' . $_SERVER['GITHUB_ORGANIZATION'] . '/' . $githubRepository . '/milestones', $githubHeaders, json_encode($milestone));
 
     if ($response->getStatusCode() < 400) {
         $data = json_decode($response->getContent(), true);

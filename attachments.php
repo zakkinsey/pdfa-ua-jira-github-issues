@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctrine Jira to Github Migration
+ * Jira to Github Migration
  *
  * Import non-binary attachments into a Gist and comment on the relevant issue
  * with a link.
@@ -31,7 +31,7 @@ if (!isset($projects[$project])) {
 
 $githubRepository = $projects[$project];
 $githubHeaders = [
-    'User-Agent: Doctrine Jira Migration',
+    'User-Agent: Jira Migration',
     'Authorization: token ' . $_SERVER['GITHUB_TOKEN'],
     'Accept: application/vnd.github.golden-comet-preview+json'
 ];
@@ -50,7 +50,7 @@ foreach ($issues as $issue) {
     $attachments = scandir('data/attachments/' . $project . '/' . $issue);
 
     $gist = [
-        'description' => 'Attachments to Doctrine Jira Issue ' . $issue . ' - https://github.com/doctrine/' . $githubRepository . '/issues/' . $issueMap[$issue],
+        'description' => 'Attachments to Jira Issue ' . $issue . ' - https://github.com/' . $_SERVER['GITHUB_ORGANIZATION'] . '/' . $githubRepository . '/issues/' . $issueMap[$issue],
         'public' => false,
         'files' => [],
     ];
@@ -92,7 +92,7 @@ foreach ($issues as $issue) {
     }
 
     $response = $client->post(
-        'https://api.github.com/repos/doctrine/' . $githubRepository . '/issues/' . $issueMap[$issue] . '/comments',
+        'https://api.github.com/repos/' . $_SERVER['GITHUB_ORGANIZATION'] . '/' . $githubRepository . '/issues/' . $issueMap[$issue] . '/comments',
         $githubHeaders,
         json_encode(['body' => $comment])
     );

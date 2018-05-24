@@ -55,22 +55,21 @@ $count = 0;
 
 @mkdir("data/" . $project, 0777);
 
-$knownIssueTypes = ['Bug', 'New Feature', 'Improvement'];
+$knownIssueTypes = ['Bug', 'New Feature', 'Improvement', 'Code Review', 'Epic', 'Sub-task', 'Support', 'Task', 'Technical task', 'User Story'];
 
 $knownAssigneesMap = [
-    'beberlei'        => 'beberlei',
-    'guilhermeblanco' => 'guilhermeblanco',
-    'jwage'           => 'jwage',
-    'asm89'           => 'asm89',
-    'ocramius'        => 'ocramius',
-    'deeky666'        => 'deeky666',
-    'fabio.bat.silva' => 'FabioBatSilva',
-    'hobodave'        => 'hobodave',
-    'jmikola'         => 'jmikola',
-    'kimhemsoe'       => 'kimhemsoe',
-    'lsmith'          => 'lsmith77',
-    'wschalle'        => 'zeroedin-bill',
-    'doctrinebot'     => 'doctrinebot',
+    'ymarcon'         => 'ymarcon',
+    'cfontin'         => 'meek0',
+    'rhaeri'          => 'kazoompa',
+    'samir'           => 'smirfolio',
+    'plaflamm'        => 'plaflamme',
+    'cthiebault'      => 'cthiebault',
+    'tombisho'        => 'tombisho',
+    'dean'            => 'inglis-dl',
+    'rbouchakri'      => 'Rima-B',
+    'rroces'          => 'firone',
+    'emorency'        => 'emorency',
+    'ctamisier'       => 'ctamisier'
 ];
 
 while (true) {

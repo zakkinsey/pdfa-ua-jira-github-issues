@@ -26,7 +26,7 @@ if (!isset($projects[$project])) {
 }
 
 $githubRepository = $projects[$project];
-$githubHeaders = ['User-Agent: Doctrine Jira Migration', 'Authorization: token ' . $_SERVER['GITHUB_TOKEN']];
+$githubHeaders = ['User-Agent: Jira Migration', 'Authorization: token ' . $_SERVER['GITHUB_TOKEN']];
 $jiraHeaders = ['Authorization: Basic ' . base64_encode(sprintf('%s:%s', $_SERVER['JIRA_USER'], $_SERVER['JIRA_PASSWORD']))];
 $client = new \Buzz\Browser();
 

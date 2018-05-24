@@ -23,7 +23,7 @@ if (!isset($projects[$project])) {
 
 $githubRepository = $projects[$project];
 $githubHeaders = [
-    'User-Agent: Doctrine Jira Migration',
+    'User-Agent: Jira Migration',
     'Authorization: token ' . $_SERVER['GITHUB_TOKEN'],
     'Accept: application/vnd.github.golden-comet-preview+json'
 ];
@@ -51,10 +51,10 @@ foreach ($files as $file) {
         $githubId = $issueNumbers[$issueKey];
 
         $client->post(
-            'https://api.github.com/repos/doctrine/' . $githubRepository . '/issues/' . $githubId . '/labels',
+            'https://api.github.com/repos/' . $_SERVER['GITHUB_ORGANIZATION'] . '/' . $githubRepository . '/issues/' . $githubId . '/labels',
             $githubHeaders,
             json_encode($issue['issue']['labels'])
         );
-        printf("https://github.com/doctrine/%s/issues/%d\n", $githubRepository, $githubId);
+        printf("https://github.com/' . $_SERVER['GITHUB_ORGANIZATION'] . '/%s/issues/%d\n", $githubRepository, $githubId);
     }
 }
