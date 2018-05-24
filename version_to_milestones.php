@@ -1,6 +1,6 @@
 <?php
 /**
- * arnsbogroup Jira to Github Migration
+ * Jira to Github Migration
  *
  * Step 1: Create a milestone for every Jira version in the Github Issue Tracker.
  *
