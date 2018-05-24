@@ -46,11 +46,18 @@ if (isset($argv[2])) {
     $files = [$argv[2] . ".json"];
 }
 
-$count = 0;
+$issueIds = [];
 foreach ($files as $file) {
     if ($file === "." || $file === "..") continue;
+    $issueId = str_replace($project . '-', '', str_replace('.json', '', $file));
+    array_push($issueIds, intval($issueId));
+}
+sort($issueIds);
 
-    $issueKey = str_replace('.json', '', $file);
+$count = 0;
+foreach ($issueIds as $issueId) {
+    $issueKey = $project . '-' . $issueId;
+    $file = $issueKey . '.json';
     $issue = json_decode(file_get_contents('data/' . $project . '/' . $file), true);
 
     printf("Preparing %s... ", $issueKey);
