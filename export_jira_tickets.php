@@ -108,7 +108,7 @@ while (true) {
         ];
 
         if (isset($issue['fields']['issuetype']['name']) && in_array($issue['fields']['issuetype']['name'], $knownIssueTypes)) {
-            $import['issue']['labels'] = [$issue['fields']['issuetype']['name']];
+            $import['issue']['labels'] = [strtolower($issue['fields']['issuetype']['name'])];
         }
 
         if (isset($issue['fields']['fixVersions']) && count($issue['fields']['fixVersions']) > 0) {
