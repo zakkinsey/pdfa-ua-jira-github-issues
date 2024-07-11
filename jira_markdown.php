@@ -27,6 +27,7 @@ function toMarkdown($text) {
 
     $converted = preg_replace('/{noformat}/', '```', $converted);
 
+    // TODO: fix regex
     $converted = preg_replace_callback('/((DBAL|DCOM|DDC|DMIG)+-([0-9]+))/', function ($matches) {
         return '[' . $matches[1] . '](' . getenv('JIRA_URL') . '/jira/browse/' . $matches[1] . ')';
     }, $converted);
