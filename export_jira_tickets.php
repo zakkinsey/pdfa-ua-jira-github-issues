@@ -81,7 +81,7 @@ while (true) {
                 'title' => sprintf('%s: %s', $issue['key'], $issue['fields']['summary']),
                 'body' => sprintf(
                     "Jira issue originally created by user %s:\n\n%s",
-                    mentionName($issue['fields']['creator']['accountId']),
+                    mentionName($issue['fields']['creator']['key']),
                     toMarkdown($issue['fields']['description'])
                 ),
                 'created_at' => substr($issue['fields']['created'], 0, 19) . 'Z',
@@ -107,8 +107,8 @@ while (true) {
             }
         }
 
-        if (isset($issue['fields']['assignee']) && $issue['fields']['assignee'] && in_array($issue['fields']['assignee']['accountId'], $knownAssigneesMap)) {
-            $import['issue']['assignee'] = $knownAssigneesMap[$issue['fields']['assignee']['accountId']];
+        if (isset($issue['fields']['assignee']) && $issue['fields']['assignee'] && in_array($issue['fields']['assignee']['key'], $knownAssigneesMap)) {
+            $import['issue']['assignee'] = $knownAssigneesMap[$issue['fields']['assignee']['key']];
         }
 
         $import['comments'] = [];
@@ -119,7 +119,7 @@ while (true) {
                     'created_at' => substr($comment['created'], 0, 19) . 'Z',
                     'body' => sprintf(
                         "Comment created by %s:\n\n%s",
-                        mentionName($comment['author']['accountId']),
+                        mentionName($comment['author']['key']),
                         toMarkdown($comment['body'])
                     ),
                 ];
