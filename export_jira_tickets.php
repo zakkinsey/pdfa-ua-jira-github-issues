@@ -128,6 +128,8 @@ while (true) {
         if (isset($issue['fields']['comment']) && count($issue['fields']['comment']['comments']) > 0) {
             foreach ($issue['fields']['comment']['comments'] as $comment) {
                 $import['comments'][] = [
+                    // TODO: WK this looks wrong. Replacing the time zone with 'Z', UTC+0000.
+                    // Probably simply need to remove the seconds fraction
                     'created_at' => substr($comment['created'], 0, 19) . 'Z',
                     'body' => sprintf(
                         "Comment created by %s:\n\n%s",
