@@ -140,6 +140,19 @@ while (true) {
             }
         }
 
+        $import['history'] = [];
+        if (isset($issue['changelog']) && count($issue['changelog']['histories']) > 0) {
+            foreach ($issue['changelog']['histories'] as $historyItem) {
+                $import['history'][] = [
+                    // TODO: WK this looks wrong. Replacing the time zone with 'Z', UTC+0000.
+                    // Probably simply need to remove the seconds fraction
+                    // copied from comments above
+                    'created_at' => substr($historyItem['created'], 0, 19) . 'Z',
+                    'body' => 'TODO: fix this',
+                ];
+            }
+        }
+
         if (isset($issue['fields']['resolutiondate']) && $issue['fields']['resolutiondate']) {
             $import['comments'][] = [
                 'created_at' => substr($issue['fields']['resolutiondate'], 0, 19) . 'Z',
