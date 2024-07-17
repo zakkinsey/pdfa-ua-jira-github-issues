@@ -76,13 +76,13 @@ while (true) {
     }
     $count += count($issues['issues']);
 
-    $historyNames = new \Ds\Set();
+    $historyNames = [];
     foreach ($issues['issues'] as $issue) {
         foreach ($issue['changelog']['history'] as $history) {
-            $historyNames->add($history['name']);
+            $historyNames[] = $history['name'];
         }
     }
-    $historyNames->sort();
+    array_unique($historyNames);
     print_r($historyNames);
 
     foreach ($issues['issues'] as $issue) {
