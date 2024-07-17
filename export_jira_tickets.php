@@ -79,7 +79,7 @@ while (true) {
     $historyNames = [];
     foreach ($issues['issues'] as $issue) {
         foreach ($issue['changelog']['histories'] as $history) {
-            $historyNames[] = $history['name'];
+            $historyNames[] = $history['author']['name'];
         }
     }
     array_unique($historyNames);
