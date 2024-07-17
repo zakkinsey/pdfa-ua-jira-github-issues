@@ -83,7 +83,7 @@ while (true) {
         }
     }
     $historyNames = array_unique($historyNames);
-    print_r($historyNames);
+    print(join("\n", $historyNames));
 
     foreach ($issues['issues'] as $issue) {
         //print_r($issue);
