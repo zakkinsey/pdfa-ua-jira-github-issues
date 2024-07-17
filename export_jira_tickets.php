@@ -142,7 +142,9 @@ while (true) {
 
         $import['history'] = [];
         if (isset($issue['changelog']) && count($issue['changelog']['histories']) > 0) {
+            $changelog = ''
             foreach ($issue['changelog']['histories'] as $historyItem) {
+                $changelog .= toMarkdown()
                 $import['history'][] = [
                     // TODO: WK this looks wrong. Replacing the time zone with 'Z', UTC+0000.
                     // Probably simply need to remove the seconds fraction
@@ -151,6 +153,13 @@ while (true) {
                     'body' => 'TODO: fix this',
                 ];
             }
+            $import['comments'][] = [
+                    'created_at' => substr($comment['created'], 0, 19) . 'Z',
+                    'body' => sprintf(
+                        "Changes made to JIRA issue before import to GitHub:\n\n%s",
+                        $changelog,
+                    ),
+            ]
         }
 
         if (isset($issue['fields']['resolutiondate']) && $issue['fields']['resolutiondate']) {
