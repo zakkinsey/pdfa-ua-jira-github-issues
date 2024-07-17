@@ -78,7 +78,7 @@ while (true) {
 
     $historyNames = [];
     foreach ($issues['issues'] as $issue) {
-        foreach ($issue['changelog']['history'] as $history) {
+        foreach ($issue['changelog']['histories'] as $history) {
             $historyNames[] = $history['name'];
         }
     }
