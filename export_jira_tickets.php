@@ -58,6 +58,8 @@ $count = 0;
 $knownIssueTypes = explode(',', getenv('ISSUE_TYPES'));
 $knownAssigneesMap = json_decode(getenv('ASSIGNEES'), true);
 
+$historyNames = [];
+
 while (true) {
     $response = $client->get(getenv('JIRA_URL') . "/rest/api/2/search?jql=" . urlencode("project = $project ORDER BY created ASC") . "&fields=" . urlencode("*all") . "&startAt=" . $startAt . "&expand=changelog", $jiraHeaders);
 
@@ -72,18 +74,17 @@ while (true) {
 
     if (count($issues['issues']) === 0) {
         printf("Exported %d issues from Jira into data/%s/ folder.\n", $count, $project);
+        $historyNames = array_unique($historyNames);
+        print(join("\n", $historyNames));
         return;
     }
     $count += count($issues['issues']);
 
-    $historyNames = [];
     foreach ($issues['issues'] as $issue) {
         foreach ($issue['changelog']['histories'] as $history) {
             $historyNames[] = $history['author']['name'];
         }
     }
-    $historyNames = array_unique($historyNames);
-    print(join("\n", $historyNames));
 
     foreach ($issues['issues'] as $issue) {
         //print_r($issue);
