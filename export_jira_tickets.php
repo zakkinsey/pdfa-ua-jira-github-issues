@@ -68,6 +68,7 @@ while (true) {
     }
 
     $issues = json_decode($response->getContent(), true);
+    file_put_contents("data/" . $project . ".json", json_encode($issues, JSON_PRETTY_PRINT));
 
     if (count($issues['issues']) === 0) {
         printf("Exported %d issues from Jira into data/%s/ folder.\n", $count, $project);
