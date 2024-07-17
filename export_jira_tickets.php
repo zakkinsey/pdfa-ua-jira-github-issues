@@ -140,6 +140,7 @@ while (true) {
             }
         }
 
+        /*
         $import['history'] = [];
         if (isset($issue['changelog']) && count($issue['changelog']['histories']) > 0) {
             $changelog = ''
@@ -161,6 +162,7 @@ while (true) {
                     ),
             ]
         }
+        */
 
         if (isset($issue['fields']['resolutiondate']) && $issue['fields']['resolutiondate']) {
             $import['comments'][] = [
