@@ -59,7 +59,7 @@ $knownIssueTypes = explode(',', getenv('ISSUE_TYPES'));
 $knownAssigneesMap = json_decode(getenv('ASSIGNEES'), true);
 
 while (true) {
-    $response = $client->get(getenv('JIRA_URL') . "/rest/api/2/search?jql=" . urlencode("project = $project ORDER BY created ASC") . "&fields=" . urlencode("*all") . "&startAt=" . $startAt, $jiraHeaders);
+    $response = $client->get(getenv('JIRA_URL') . "/rest/api/2/search?jql=" . urlencode("project = $project ORDER BY created ASC") . "&fields=" . urlencode("*all") . "&startAt=" . $startAt . "&expand=changelog", $jiraHeaders);
 
     if ($response->getStatusCode() !== 200) {
         printf("Could not fetch versions of project '$project'\n");
