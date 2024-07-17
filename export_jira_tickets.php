@@ -76,6 +76,15 @@ while (true) {
     }
     $count += count($issues['issues']);
 
+    $historyNames = new \Ds\Set();
+    foreach ($issues['issues'] as $issue) {
+        foreach ($issue['changelog']['history'] as $history) {
+            $historyNames->add($history['name']);
+        }
+    }
+    $historyNames->sort();
+    print_r($historyNames);
+
     foreach ($issues['issues'] as $issue) {
         //print_r($issue);
         $import = [
