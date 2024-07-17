@@ -76,6 +76,7 @@ while (true) {
     $count += count($issues['issues']);
 
     foreach ($issues['issues'] as $issue) {
+        //print_r($issue);
         $import = [
             'issue' => [
                 'title' => sprintf('%s: %s', $issue['key'], $issue['fields']['summary']),
