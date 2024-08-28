@@ -53,8 +53,15 @@ foreach(json_decode($response->getContent(), true) as $existingMilestone) {
 
 $count = 0;
 
-$projectDataTag = "data/" . $project;
+$dataDir = "data";
+$projectDataTag = "$dataDir/$project";
+@mkdir($dataDir, 0777);
 @mkdir($projectDataTag, 0777);
+
+if (!is_dir($projectDataTag)) {
+    printf("Could not create directory: '$projectDataTag'\n");
+    exit(2);
+}
 
 $knownIssueTypes = explode(',', getenv('ISSUE_TYPES'));
 $knownAssigneesMap = json_decode(getenv('ASSIGNEES'), true);
