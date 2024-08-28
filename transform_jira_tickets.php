@@ -65,6 +65,7 @@ foreach ($issueIds as $issueId) {
 
     //print_r($issue);
     $import = [
+		'jiraKey' => $issueKey,
         'issue' => [
             'title' => sprintf('%s: %s', $issue['key'], $issue['fields']['summary']),
             'body' => sprintf(
