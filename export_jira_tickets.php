@@ -53,7 +53,8 @@ foreach(json_decode($response->getContent(), true) as $existingMilestone) {
 
 $count = 0;
 
-@mkdir("data/" . $project, 0777);
+$projectDataTag = "data/" . $project;
+@mkdir($projectDataTag, 0777);
 
 $knownIssueTypes = explode(',', getenv('ISSUE_TYPES'));
 $knownAssigneesMap = json_decode(getenv('ASSIGNEES'), true);
@@ -68,7 +69,7 @@ while (true) {
     }
 
     $issues = json_decode($response->getContent(), true);
-    file_put_contents("data/" . $project . ".json", json_encode($issues, JSON_PRETTY_PRINT));
+    file_put_contents($projectDataTag . ".json", json_encode($issues, JSON_PRETTY_PRINT));
 
     if (count($issues['issues']) === 0) {
         printf("Exported %d issues from Jira into data/%s/ folder.\n", $count, $project);
@@ -77,7 +78,7 @@ while (true) {
     $count += count($issues['issues']);
 
     foreach ($issues['issues'] as $issue) {
-        file_put_contents("data/" . $project . "/" . $issue['key'] . ".json", json_encode($issue, JSON_PRETTY_PRINT));
+        file_put_contents($projectDataTag . "/" . $issue['key'] . ".json", json_encode($issue, JSON_PRETTY_PRINT));
         printf("Processed issue: %s (Idx: %d)\n", $issue['key'], $startAt);
         $startAt++;
     }
