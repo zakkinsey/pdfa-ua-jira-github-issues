@@ -55,10 +55,12 @@ $count = 0;
 
 $dataDir = "data";
 $projectDataTag = "$dataDir/$project";
+$jiraExportDir = "$projectDataTag/jira-export";
 @mkdir($dataDir, 0777);
 @mkdir($projectDataTag, 0777);
+@mkdir($jiraExportDir, 0777);
 
-if (!is_dir($projectDataTag)) {
+if (!is_dir($jiraExportDir)) {
     printf("Could not create directory: '$projectDataTag'\n");
     exit(2);
 }
@@ -79,13 +81,13 @@ while (true) {
     file_put_contents($projectDataTag . ".json", json_encode($issues, JSON_PRETTY_PRINT));
 
     if (count($issues['issues']) === 0) {
-        printf("Exported %d issues from Jira into data/%s/ folder.\n", $count, $project);
+        printf("Exported %d issues from Jira into %s/ folder.\n", $count, $jiraExportDir);
         return;
     }
     $count += count($issues['issues']);
 
     foreach ($issues['issues'] as $issue) {
-        file_put_contents($projectDataTag . "/" . $issue['key'] . ".json", json_encode($issue, JSON_PRETTY_PRINT));
+        file_put_contents("$jiraExportDir/jira-{$issue['key']}.json", json_encode($issue, JSON_PRETTY_PRINT));
         printf("Processed issue: %s (Idx: %d)\n", $issue['key'], $startAt);
         $startAt++;
     }
