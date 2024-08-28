@@ -33,78 +33,98 @@ $githubHeaders = [
     'Authorization: token ' . getenv('GITHUB_TOKEN'),
     'Accept: application/vnd.github.golden-comet-preview+json'
 ];
-$jiraHeaders = ['Authorization: Basic ' . base64_encode(sprintf('%s:%s', getenv('JIRA_USER'), getenv('JIRA_TOKEN')))];
+$githubImportUrl = 'https://api.github.com/repos/' . getenv('GITHUB_ORG') . '/' . $githubRepository . '/import/issues';
 
-$ticketStatus = [];
-if (file_exists('data/' . $project . '.status.json')) {
-    $ticketStatus = json_decode(file_get_contents('data/' . $project . '.status.json'), true);
-}
+$dataDir = "data";
+$projectDataTag = "$dataDir/$project";
 
-$files = scandir('data/' . $project);
+$files = scandir($projectDataTag);
 
-if (isset($argv[2])) {
-    $files = [$argv[2] . ".json"];
-}
-
+$maxIssueId = 0;
 $issueIds = [];
 foreach ($files as $file) {
-    if ($file === "." || $file === "..") continue;
-    $issueId = str_replace($project . '-', '', str_replace('.json', '', $file));
+    if (is_dir("$projectDataTag/$file")) continue;
+    $issueId = preg_replace("/$project-(\\d+)\\.json/", '$1', $file);
+    $maxIssueId = max($maxIssueId, $issueId);
     array_push($issueIds, intval($issueId));
 }
 sort($issueIds);
 
 $count = 0;
-foreach ($issueIds as $issueId) {
+for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
     $issueKey = $project . '-' . $issueId;
-    $file = $issueKey . '.json';
-    $issue = json_decode(file_get_contents('data/' . $project . '/' . $file), true);
+    $file = "$projectDataTag/$issueKey.json";
 
-    printf("Preparing %s... ", $issueKey);
+    if (is_file($file)) {
+        $issue = json_decode(file_get_contents($file), true);
 
-    if (isset($ticketStatus[$issueKey])) {
-        if ($ticketStatus[$issueKey]['status'] === 'pending') {
-            printf("pending, skipped\n");
-            continue;
-            $response = $client->get($ticketStatus[$issueKey]['url'], $githubHeaders);
-
-            if ($response->getStatusCode() == 200) {
-                $ticketStatus[$issueKey] = json_decode($response->getContent(), true);
-                file_put_contents("data/" . $project . ".status.json", json_encode($ticketStatus, JSON_PRETTY_PRINT));
-                printf("updated status... ");
-            }
-        }
-
-        if ($ticketStatus[$issueKey]['status'] === 'pending') {
-            printf("pending, skipped\n");
-            continue;
-        }
-
-        if ($ticketStatus[$issueKey]['status'] === 'imported') {
-            printf("imported, skipped\n");
-            continue;
-        }
-
-        if ($ticketStatus[$issueKey]['status'] === 'failed') {
-            printf("Error importing, retry... ", $issueKey);
+        printf("Creating real issue: $issueKey\n");
+        createIssue($client, $githubImportUrl, $githubHeaders, $issue);
+    } else {
+        printf("Creating fake issue: $issueKey\n");
+        $issueCreated = createIssue($client, $githubImportUrl, $githubHeaders, [
+            'jiraKey' => $issueKey,
+            'issue' => [
+                'title' => "$issueKey: fake issue to be deleted",
+                'body' => "body of fake $issueKey issue to be deleted",
+            ],
+        ]);
+        if ($issueCreated) {
+            // TODO: delete fake issue
+            // for the instant purpose, deleting fake issues manually is fine
         }
     }
-    //printf("debug skip\n"); continue;
 
-    $response = $client->post('https://api.github.com/repos/' . getenv('GITHUB_ORG') . '/' . $githubRepository . '/import/issues', $githubHeaders, json_encode($issue));
+}
+
+function createIssue($client, $githubImportUrl, $githubHeaders, $issue) {
+    $issueKey = $issue['jiraKey'];
+    unset($issue['jiraKey']);
+    printf("Creating issue $issueKey... ");
+
+    $response = $client->post($githubImportUrl, $githubHeaders, json_encode($issue));
+    $ticketStatus = json_decode($response->getContent(), true);
 
     if ($response->getStatusCode() >= 400) {
-        printf("Error: " . $response->getContent());
-        exit;
+        printf("Error posting $issueKey:\n");
+        print_r($response);
+        print_r($ticketStatus);
+        return false;
     }
 
-    $ticketStatus[$issueKey] = json_decode($response->getContent(), true);
-    file_put_contents("data/" . $project . ".status.json", json_encode($ticketStatus, JSON_PRETTY_PRINT));
-    printf("imported %s\n", $issueKey);
+    sleep(1);
 
-    $count++;
+    while ($ticketStatus['status'] === 'pending') {
+        $response = $client->get($ticketStatus['url'], $githubHeaders);
+        $ticketStatus = json_decode($response->getContent(), true);
 
-    if (($count % 10) === 0) {
-        //exit;
+        if ($response->getStatusCode() != 200) {
+            printf("Error getting status of $issueKey:\n");
+            print_r($response);
+            print_r($ticketStatus);
+            return false;
+        }
+
+        sleep(1);
     }
+
+    if ($ticketStatus['status'] === 'imported') {
+        printf("Success!\n");
+        return true;
+    }
+
+    if ($ticketStatus['status'] === 'failed') {
+        printf("Import failed for $issueKey:\n");
+        print_r($response);
+        print_r($ticketStatus);
+        return false;
+    }
+
+    printf("Unknown status for $issueKey:\n");
+    print_r($response);
+    print_r($ticketStatus);
+
+    return false;
+    // file_put_contents("data/" . $project . ".status.json", json_encode($ticketStatus, JSON_PRETTY_PRINT));
+
 }
