@@ -96,10 +96,6 @@ foreach ($issueIds as $issueId) {
         }
     }
 
-    if (isset($issue['fields']['assignee']) && $issue['fields']['assignee'] && in_array($issue['fields']['assignee']['key'], $knownAssigneesMap)) {
-        $import['issue']['assignee'] = $knownAssigneesMap[$issue['fields']['assignee']['key']];
-    }
-
     $import['comments'] = [];
 
     if (isset($issue['fields']['comment']) && count($issue['fields']['comment']['comments']) > 0) {
