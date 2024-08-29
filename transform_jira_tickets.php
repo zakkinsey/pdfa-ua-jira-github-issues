@@ -39,8 +39,6 @@ $count = 0;
 $knownIssueTypes = explode(',', getenv('ISSUE_TYPES'));
 $knownAssigneesMap = json_decode(getenv('ASSIGNEES'), true);
 
-$historyNames = [];
-
 $dataDir = "data";
 $projectDataTag = "$dataDir/$project";
 $jiraExportDir = "$projectDataTag/jira-export";
