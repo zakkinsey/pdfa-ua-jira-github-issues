@@ -270,9 +270,11 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
 
         if ($fields != null) {
             foreach ($fieldKeysMap as $fieldName => $fieldKey) {
+                $fieldNodeId = $fieldIds[$fieldName];
                 if (isset($fields[$fieldKey])) {
                     $field = $fields[$fieldKey];
                     if ($field != null) {
+                        $value = '';
                         //printf("$fieldName ($fieldKey) is type %s.\n", gettype($field));
                         if (is_scalar($field)) {
                             $value = $field;
@@ -283,7 +285,7 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
                         } else if (isset($field['name'])) {
                             $value = $field['name'];
                             if ($fieldName == 'Status') {
-                                printf("\t$fieldName = '$value'\n");
+                                //printf("\t$fieldName = '$value'\n");
                                 $value = $statusMap[$value];
                             }
                             //printf("\t$fieldName = '$value'\n");
@@ -318,8 +320,24 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
                             print_r($field);
                             printf("\n\n");
                         }
-                        if ($fieldName != 'Tests') {
-                            printf("\t$fieldName = '$value'\n");
+                        if (isset($value) && $value != null && $value != '') {
+                            if ($fieldName == 'Tests') {
+                                $value = toMarkdown($value);
+                                $sq = "'";
+                                $dq = '"';
+                                $value = preg_replace("/'/", "$sq$dq$sq$dq$sq", $value);
+                            } else {
+                                if (isset($optionIds[$fieldName])) {
+                                    $optionId = $optionIds[$fieldName][$value];
+                                    $setFieldCmd = "./set-select-field-value.bash $projectNodeId $itemNodeId $fieldNodeId $optionId";
+                                } else {
+                                    $setFieldCmd = "./set-text-field-value.bash $projectNodeId $itemNodeId $fieldNodeId '$value'";
+                                }
+                                printf("\t\t$setFieldCmd\n");
+                                print_r(shell_exec($setFieldCmd));
+                                printf("\n");
+                                sleep(1);
+                            }
                         }
                     } else {
                         //printf("\t$fieldName is null\n");
