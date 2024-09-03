@@ -43,6 +43,18 @@ $dataDir = "data";
 $projectDataTag = "$dataDir/$project";
 $jiraExportDir = "$projectDataTag/jira-export";
 
+$githubProjectName = getenv('githubProjectName');
+shell_exec('./get-projects.bash ' . getenv('githubUser'));
+$projectsDef = json_decode(file_get_contents("$dataDir/projects.json"), true);
+$projectNodeId = null;
+foreach ($projectsDef['data']['user']['projectsV2']['nodes'] as $projectDef) {
+    if ($projectDef['title'] == "@$githubProjectName") {
+        $projectNodeId = $projectDef['id'];
+    }
+}
+
+shell_exec("./get-fields.bash $githubProjectName");
+
 $files = scandir($jiraExportDir);
 
 $maxIssueId = 0;
