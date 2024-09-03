@@ -252,7 +252,17 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
 
     if (is_file($file)) {
         printf("\n");
-        printf("$repoIssuesUrl$issueId\n");
+        $issueUrl = "$repoIssuesUrl$issueId\n";
+        printf($issueUrl);
+
+        $issueNodeOut = shell_exec("./get-node-id-from-url.bash $issueUrl");
+        $issueNode = json_decode($issueNodeOut, true);
+        $issueNodeId = $issueNode['data']['resource']['id'];
+
+        $addProjectCmd = "./add-issue-to-project.bash $projectNodeId $issueNodeId";
+        $projectItem = json_decode(shell_exec($addProjectCmd), true);
+
+        $itemNodeId = $projectItem['data']['addProjectV2ItemById']['item']['id'];
 
         $issue = json_decode(file_get_contents($file), true);
 //        print_r($issue);
