@@ -7,7 +7,7 @@ mkdir -p "$dataDir"
 getProjectNodeId() {
 	projectName="$1"
 	
-	file="$dataDir"/projects.graphql
+	file="$dataDir"/projects.json
 
 	if ! [ -f "$file" ] ; then
 		bash get-projects.bash "$githubUser"

@@ -23,4 +23,4 @@ gh api graphql -f query='
         }
       }
     }
-  }' > data/projects.graphql
+  }' > data/projects.json
