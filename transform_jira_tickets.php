@@ -65,7 +65,7 @@ foreach ($issueIds as $issueId) {
     $import = [
         'jiraKey' => $issueKey,
         'issue' => [
-            'title' => sprintf('%s: %s', $issue['key'], $issue['fields']['summary']),
+            'title' => sprintf('%s: %s', $issueKey, $issue['fields']['summary']),
             'body' => sprintf(
                 "Jira issue originally created by user %s:\n\n%s",
                 mentionName($issue['fields']['creator']['key']),
@@ -146,8 +146,8 @@ foreach ($issueIds as $issueId) {
         unset($import['comments']);
     }
 
-    file_put_contents("data/" . $project . "/" . $issue['key'] . ".json", json_encode($import, JSON_PRETTY_PRINT));
-    printf("Processed issue: %s (Idx: %d)\n", $issue['key'], $count);
+    file_put_contents("data/" . $project . "/" . $issueKey . ".json", json_encode($import, JSON_PRETTY_PRINT));
+    printf("Processed issue: %s (Idx: %d)\n", $issueKey, $count);
     $count++;
 
 }
