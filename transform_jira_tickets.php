@@ -146,7 +146,7 @@ foreach ($issueIds as $issueId) {
         unset($import['comments']);
     }
 
-    file_put_contents("data/" . $project . "/" . $issueKey . ".json", json_encode($import, JSON_PRETTY_PRINT));
+    file_put_contents("data/$project/$issueKey.json", json_encode($import, JSON_PRETTY_PRINT));
     printf("Processed issue: %s (Idx: %d)\n", $issueKey, $count);
     $count++;
 
