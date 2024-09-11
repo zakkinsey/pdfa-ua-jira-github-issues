@@ -58,6 +58,14 @@ function toMarkdown($text) {
         return str_repeat('#', $matches[1]) . $matches[2];
     }, $converted);
 
+    $converted = preg_replace_callback(
+        '/([cC]heck|[tT]est|[sS]tep)s? +#\d+|#\d+(.*(is|are( all)?) (true|false))/',
+        function ($matches) {
+            return preg_replace('/#(\d+)/', '#&#x2060;$1', $matches[0]);
+        },
+        $converted
+    );
+
     $converted = preg_replace_callback('/([*_])(.*)\1/', function ($matches) {
         list ($match, $wrapper, $content) = $matches;
         $to = ($wrapper === '*') ? '**' : '*';
@@ -84,10 +92,7 @@ function toMarkdown($text) {
 
     $converted = preg_replace('/{noformat}/', '```', $converted);
 
-    // TODO: fix regex
-    $converted = preg_replace_callback('/((DBAL|DCOM|DDC|DMIG)+-([0-9]+))/', function ($matches) {
-        return '[' . $matches[1] . '](' . getenv('JIRA_URL') . '/jira/browse/' . $matches[1] . ')';
-    }, $converted);
+    $converted = preg_replace('{(https://jira.pdfa.org/browse/)?PDFUA-(\d+)}', '#$2', $converted);
 
     return $converted;
 }
