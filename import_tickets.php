@@ -64,6 +64,7 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
         printf("Creating fake issue: $issueKey\n");
         $issueCreated = createIssue($client, $githubImportUrl, $githubHeaders, [
             'jiraKey' => $issueKey,
+            'deleteIssue' => true,
             'issue' => [
                 'title' => "$issueKey: fake issue to be deleted",
                 'body' => "body of fake $issueKey issue to be deleted",
@@ -80,6 +81,7 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
 function createIssue($client, $githubImportUrl, $githubHeaders, $issue) {
     $issueKey = $issue['jiraKey'];
     unset($issue['jiraKey']);
+    $deleteIssue = isset($issue['deleteIssue']) && $issue['deleteIssue'];
     printf("Creating issue $issueKey... ");
 
     $response = $client->post($githubImportUrl, $githubHeaders, json_encode($issue));
@@ -110,6 +112,17 @@ function createIssue($client, $githubImportUrl, $githubHeaders, $issue) {
 
     if ($ticketStatus['status'] === 'imported') {
         printf("Success!\n");
+        if ($deleteIssue) {
+            printf("Deleting fake issue: $issueKey\n");
+
+            $issueUrl = $ticketStatus['issue_url'];
+
+            $issueResponse = $client->post($issueUrl, $githubHeaders);
+            $issueJSON = json_decode($response->getContent(), true);
+            $issueNodeId = $issueJSON['node_id'];
+
+            $deletionOut = shell_exec("./delete-issue.bash $issueNodeId");
+        }
         return true;
     }
 
