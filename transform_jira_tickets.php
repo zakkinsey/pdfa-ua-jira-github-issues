@@ -194,7 +194,7 @@ foreach ($issueIds as $issueId) {
     usort($import['comments'], function ($a, $b) {
         $aTime = strtotime($a['created_at']);
         $bTime = strtotime($b['created_at']);
-        $retVal = $bTime - $aTime;
+        $retVal = $aTime - $bTime;
         if ($retVal == 0) {
             $retVal = $a['body'] <=> $b['body'];
         }
