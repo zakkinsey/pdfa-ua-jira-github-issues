@@ -54,6 +54,22 @@ function toMarkdown($text) {
         return "\n" . preg_replace('/^/m', '>', $matches[1]) . "\n";
     }, $converted);
 
+    $converted = preg_replace_callback('/^([-*#]*)([-*#]) /m', function ($matches) {
+        $indent = ' ';
+        foreach(str_split($matches[1]) as $char){
+            if ($char == '#') {
+                $indent .= '   ';
+            } else {
+                $indent .= '  ';
+            }
+        }
+        $listOp = $matches[2];
+        if ($listOp == '#') {
+            $listOp = '1.';
+        }
+        return "$indent$listOp ";
+    }, $converted);
+
     $converted = preg_replace_callback('/^h([0-6])\.(.*)$/m', function ($matches) {
         return str_repeat('#', $matches[1]) . $matches[2];
     }, $converted);
