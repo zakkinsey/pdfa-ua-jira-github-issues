@@ -81,6 +81,7 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
 function createIssue($client, $githubImportUrl, $githubHeaders, $issue) {
     $issueKey = $issue['jiraKey'];
     unset($issue['jiraKey']);
+    $deleteIssue = false;
     if (isset($issue['deleteIssue'])) {
         $deleteIssue = $issue['deleteIssue'];
         unset($issue['deleteIssue']);
