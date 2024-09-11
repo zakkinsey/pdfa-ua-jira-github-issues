@@ -50,6 +50,10 @@ function toMarkdown($text) {
         $converted = preg_replace("/$codeBlockMarker:$codeBlockIndex/", $codeBlock, $converted);
     }
 
+    $converted = preg_replace_callback('/{quote}\n?(([^{]|{(?!quote))*)({quote}\n?)?/s', function ($matches) {
+        return "\n" . preg_replace('/^/m', '>', $matches[1]) . "\n";
+    }, $converted);
+
     $converted = preg_replace_callback('/^h([0-6])\.(.*)$/m', function ($matches) {
         return str_repeat('#', $matches[1]) . $matches[2];
     }, $converted);
