@@ -82,9 +82,9 @@ foreach ($issueIds as $issueId) {
     $import = [
         'jiraKey' => $issueKey,
         'issue' => [
-            'title' => sprintf('%s: %s', $issueKey, $issue['fields']['summary']),
+            'title' => $issue['fields']['summary'],
             'body' => sprintf(
-                "Jira issue originally created by user %s:\n\n%s",
+                "Jira issue originally created by %s:\n\n%s",
                 mentionName($usersMap, $issue['fields']['creator']),
                 exportAndMarkdown($j2mDir, "$issueKey.txt", $issue['fields']['description'])
             ),
