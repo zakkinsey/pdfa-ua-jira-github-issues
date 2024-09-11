@@ -276,14 +276,14 @@ function mentionName($usersMap, $author) {
             if (isset($author['displayName'])) {
                 $mention = $author['displayName'] . " (" . $author['name'] . ")";
             } else if (isset($author['name'])) {
-                $mention = "JIRA user " . $author['name'];
+                $mention = "Jira user " . $author['name'];
             } else if (isset($author['name'])) {
-                $mention = "JIRA user " . $author['key'];
+                $mention = "Jira user " . $author['key'];
             } else {
-                $mention = "unknown JIRA user ";
+                $mention = "unknown Jira user ";
             }
         } else {
-            $mention = "JIRA user " . $author;
+            $mention = "Jira user " . $author;
         }
     }
 
