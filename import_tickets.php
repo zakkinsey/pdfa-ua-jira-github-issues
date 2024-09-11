@@ -81,7 +81,10 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
 function createIssue($client, $githubImportUrl, $githubHeaders, $issue) {
     $issueKey = $issue['jiraKey'];
     unset($issue['jiraKey']);
-    $deleteIssue = isset($issue['deleteIssue']) && $issue['deleteIssue'];
+    if (isset($issue['deleteIssue'])) {
+        $deleteIssue = $issue['deleteIssue'];
+        unset($issue['deleteIssue']);
+    }
     printf("Creating issue $issueKey... ");
 
     $response = $client->post($githubImportUrl, $githubHeaders, json_encode($issue));
@@ -118,7 +121,7 @@ function createIssue($client, $githubImportUrl, $githubHeaders, $issue) {
             $issueUrl = $ticketStatus['issue_url'];
 
             $issueResponse = $client->post($issueUrl, $githubHeaders);
-            $issueJSON = json_decode($response->getContent(), true);
+            $issueJSON = json_decode($issueResponse->getContent(), true);
             $issueNodeId = $issueJSON['node_id'];
 
             $deletionOut = shell_exec("./delete-issue.bash $issueNodeId");
