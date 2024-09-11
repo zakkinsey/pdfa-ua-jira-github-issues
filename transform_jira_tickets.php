@@ -182,7 +182,7 @@ foreach ($issueIds as $issueId) {
 
     if (isset($issue['fields']['assignee']) && $issue['fields']['assignee']) {
         $dateTime = gmdate(DateTimeInterface::ISO8601);
-        $name = mentionName($usersMap, 'zakkinsey');
+        $name = mentionName($usersMap, 'zak.kinsey@targetstream.com');
         $from = $issue['fields']['assignee'];
         $body = "$name unassigned issue from " . mentionAssignee($usersMap, $name, $from);
         $import['comments'][] = [
