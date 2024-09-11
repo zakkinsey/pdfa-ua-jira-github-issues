@@ -77,7 +77,7 @@ foreach ($issueIds as $issueId) {
                 mentionName($issue['fields']['creator']['key']),
                 exportAndMarkdown($j2mDir, "$issueKey.txt", $issue['fields']['description'])
             ),
-            'created_at' => substr($issue['fields']['created'], 0, 19) . 'Z',
+            'created_at' => fixTimestamp($issue['fields']['created']),
             'closed' => in_array($issue['fields']['status']['name'], explode(',', getenv('CLOSED_STATES'))),
         ],
     ];
@@ -115,9 +115,7 @@ foreach ($issueIds as $issueId) {
         foreach ($issue['fields']['comment']['comments'] as $commentIndex => $comment) {
             $commentFile = sprintf("$issueKey-comment-%0{$commentIndexesLength}d.txt", $commentIndex);
             $import['comments'][] = [
-                // TODO: WK this looks wrong. Replacing the time zone with 'Z', UTC+0000.
-                // Probably simply need to remove the seconds fraction
-                'created_at' => substr($comment['created'], 0, 19) . 'Z',
+                'created_at' => fixTimestamp($comment['created']),
                 'body' => sprintf(
                     "Comment created by %s:\n\n%s",
                     mentionName($comment['author']['key']),
@@ -134,15 +132,12 @@ foreach ($issueIds as $issueId) {
         foreach ($issue['changelog']['histories'] as $historyItem) {
             $changelog .= toMarkdown()
             $import['history'][] = [
-                // TODO: WK this looks wrong. Replacing the time zone with 'Z', UTC+0000.
-                // Probably simply need to remove the seconds fraction
-                // copied from comments above
-                'created_at' => substr($historyItem['created'], 0, 19) . 'Z',
+                'created_at' => fixTimestamp($historyItem['created']),
                 'body' => 'TODO: fix this',
             ];
         }
         $import['comments'][] = [
-                'created_at' => substr($comment['created'], 0, 19) . 'Z',
+                'created_at' => fixTimestamp($comment['created']),
                 'body' => sprintf(
                     "Changes made to JIRA issue before import to GitHub:\n\n%s",
                     $changelog,
@@ -153,7 +148,7 @@ foreach ($issueIds as $issueId) {
 
     if (isset($issue['fields']['resolutiondate']) && $issue['fields']['resolutiondate']) {
         $import['comments'][] = [
-            'created_at' => substr($issue['fields']['resolutiondate'], 0, 19) . 'Z',
+            'created_at' => fixTimestamp($issue['fields']['resolutiondate']),
             'body' => sprintf('Issue was closed with resolution "%s"', $issue['fields']['resolution']['name']),
         ];
     }
@@ -166,6 +161,18 @@ foreach ($issueIds as $issueId) {
     printf("Processed issue: %s (Idx: %d)\n", $issueKey, $count);
     $count++;
 
+}
+
+function fixTimestamp($jiraTimestamp) {
+    $localDateTime = substr($jiraTimestamp, 0, 19);
+    $timeZone = substr($jiraTimestamp, 23);
+
+    $dateTime = new DateTime($localDateTime, new DateTimeZone($timeZone));
+    $dateTime->setTimeZone(new DateTimeZone('UTC'));
+    $retVal = $dateTime->format(DateTimeInterface::ISO8601);
+    $retVal = preg_replace('/[+]0000/', 'Z', $retVal);
+
+    return $retVal;
 }
 
 function mentionName($name) {
