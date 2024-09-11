@@ -118,8 +118,6 @@ foreach ($issueIds as $issueId) {
 
     $import['comments'] = [];
 
-    // TODO add comments for assignee and link changes from changelog
-
     if (isset($issue['fields']['comment']) && count($issue['fields']['comment']['comments']) > 0) {
         $commentsLastIndex = count($issue['fields']['comment']['comments']) - 1;
         $commentIndexesLength = strlen("$commentsLastIndex");
@@ -136,26 +134,72 @@ foreach ($issueIds as $issueId) {
         }
     }
 
-    /*
-    $import['history'] = [];
+    // add comments for assignee and link changes from changelog
     if (isset($issue['changelog']) && count($issue['changelog']['histories']) > 0) {
-        $changelog = ''
-        foreach ($issue['changelog']['histories'] as $historyItem) {
-            $changelog .= toMarkdown()
-            $import['history'][] = [
-                'created_at' => fixTimestamp($historyItem['created']),
-                'body' => 'TODO: fix this',
-            ];
+        foreach ($issue['changelog']['histories'] as $historyEntry) {
+            $timestamp = fixTimestamp($historyEntry['created']);
+            $name = mentionName($usersMap, $historyEntry['author']);
+            $id = $historyEntry['id'];
+            foreach ($historyEntry['items'] as $historyItem) {
+                $historyTextFile = "$issueKey-history-$id.txt";
+                $from       = $historyItem['from'];
+                $fromString = $historyItem['fromString'];
+                $to         = $historyItem['to'];
+                $toString   = $historyItem['toString'];
+                $body = null;
+                if ($historyItem['field'] == 'Link') {
+                    if ($from == null) {
+                        $body = "$name added a link to $to: $toString";
+                    }
+                    if ($to == null) {
+                        $body = "$name removed a link to $from: $fromString";
+                    }
+                    if ($from != null && $to != null) {
+                        // no evidence this occurs for links
+                        $body = "$name changed a link from $from to $to: $toString";
+                    }
+                }
+                if ($historyItem['field'] == 'assignee') {
+                    if ($from == null) {
+                        $body = "$name assigned issue to " . mentionAssignee($usersMap, $name, $to);
+                    }
+                    if ($to == null) {
+                        $body = "$name unassigned issue from " . mentionAssignee($usersMap, $name, $from);
+                    }
+                    if ($from != null && $to != null) {
+                        $body = "$name changed assignee from " . mentionAssignee($usersMap, $name, $from) .  " to " . mentionAssignee($usersMap, $name, $to);
+                    }
+                }
+                if ($body != null) {
+                    $import['comments'][] = [
+                        'created_at' => $timestamp,
+                        'body' => exportAndMarkdown($j2mDir, $historyTextFile, $body),
+                    ];
+                }
+            }
         }
-        $import['comments'][] = [
-                'created_at' => fixTimestamp($comment['created']),
-                'body' => sprintf(
-                    "Changes made to JIRA issue before import to GitHub:\n\n%s",
-                    $changelog,
-                ),
-        ]
     }
-    */
+
+    if (isset($issue['fields']['assignee']) && $issue['fields']['assignee']) {
+        $dateTime = gmdate(DateTimeInterface::ISO8601);
+        $name = mentionName($usersMap, 'zakkinsey');
+        $from = $issue['fields']['assignee'];
+        $body = "$name unassigned issue from " . mentionAssignee($usersMap, $name, $from);
+        $import['comments'][] = [
+            'created_at' => preg_replace('/[+]0000/', 'Z', $dateTime),
+            'body' => exportAndMarkdown($j2mDir, "$issueKey-final-unassign.txt", $body),
+        ];
+    }
+
+    usort($import['comments'], function ($a, $b) {
+        $aTime = strtotime($a['created_at']);
+        $bTime = strtotime($b['created_at']);
+        $retVal = $bTime - $aTime;
+        if ($retVal == 0) {
+            $retVal = $a['body'] <=> $b['body'];
+        }
+        return $retVal;
+    });
 
     if (isset($issue['fields']['resolutiondate']) && $issue['fields']['resolutiondate']) {
         $import['comments'][] = [
@@ -184,6 +228,14 @@ function fixTimestamp($jiraTimestamp) {
     $retVal = preg_replace('/[+]0000/', 'Z', $retVal);
 
     return $retVal;
+}
+
+function mentionAssignee($usersMap, $actorMention, $assigneeAuthor) {
+    $assignee = mentionName($usersMap, $assigneeAuthor);
+    if ($assignee == $actorMention) {
+        $assignee = 'self';
+    }
+    return $assignee;
 }
 
 function mentionName($usersMap, $author) {
