@@ -184,7 +184,7 @@ foreach ($issueIds as $issueId) {
         $dateTime = gmdate(DateTimeInterface::ISO8601);
         $name = mentionName($usersMap, 'zak.kinsey@targetstream.com');
         $from = $issue['fields']['assignee'];
-        $body = "$name unassigned issue from " . mentionAssignee($usersMap, $name, $from);
+        $body = "$name unassigned issue from " . mentionAssignee($usersMap, $name, $from) . ' as part of jira->github migration';
         $import['comments'][] = [
             'created_at' => preg_replace('/[+]0000/', 'Z', $dateTime),
             'body' => exportAndMarkdown($j2mDir, "$issueKey-final-unassign.txt", $body),
