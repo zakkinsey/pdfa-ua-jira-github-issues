@@ -79,6 +79,7 @@ function toMarkdown($text) {
     $converted = preg_replace('/{code(:([^}]+))?}/', '```', $converted);
 
     $converted = preg_replace('/\[(.+?)\|(.+?)\]/', '[$1]($2)', $converted);
+    $converted = preg_replace('/\\\{/', '{', $converted);
     //$converted = preg_replace('/\[(.+?)\]([^\(]*)/', '<$1>$2', $converted);
 
     $converted = preg_replace('/{noformat}/', '```', $converted);
