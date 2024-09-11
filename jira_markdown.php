@@ -1,5 +1,25 @@
 <?php
 
+function getDirTxtJiraFormat($j2mDir) {
+    return "$j2mDir/jf";
+}
+
+function getDirTxtGithubMarkdown($j2mDir) {
+    return "$j2mDir/md";
+}
+
+function exportAndMarkdown($j2mDir, $file, $jfText) {
+    $jfDir = getDirTxtJiraFormat(    $j2mDir);
+    $mdDir = getDirTxtGithubMarkdown($j2mDir);
+
+    $mdText = toMarkdown($jfText);
+
+    file_put_contents("$jfDir/$file", $jfText);
+    file_put_contents("$mdDir/$file", $mdText);
+
+    return $mdText;
+}
+
 function toMarkdown($text) {
     $converted = $text;
     if ($converted == null) {

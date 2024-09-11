@@ -42,6 +42,12 @@ $knownAssigneesMap = json_decode(getenv('ASSIGNEES'), true);
 $dataDir = "data";
 $projectDataTag = "$dataDir/$project";
 $jiraExportDir = "$projectDataTag/jira-export";
+$j2mDir = "$projectDataTag/j2m";
+
+@mkdir(                        $j2mDir,  0777);
+@mkdir(getDirTxtJiraFormat(    $j2mDir), 0777);
+@mkdir(getDirTxtGithubMarkdown($j2mDir), 0777);
+
 $files = scandir($jiraExportDir);
 
 if (isset($argv[2])) {
@@ -69,7 +75,7 @@ foreach ($issueIds as $issueId) {
             'body' => sprintf(
                 "Jira issue originally created by user %s:\n\n%s",
                 mentionName($issue['fields']['creator']['key']),
-                toMarkdown($issue['fields']['description'])
+                exportAndMarkdown($j2mDir, "$issueKey.txt", $issue['fields']['description'])
             ),
             'created_at' => substr($issue['fields']['created'], 0, 19) . 'Z',
             'closed' => in_array($issue['fields']['status']['name'], explode(',', getenv('CLOSED_STATES'))),
@@ -94,10 +100,20 @@ foreach ($issueIds as $issueId) {
         }
     }
 
+    if (isset($issue['fields']['customfield_10302'])) {
+        $testsText = $issue['fields']['customfield_10302'];
+        exportAndMarkdown($j2mDir, "$issueKey-Tests.txt", $testsText);
+    }
+
     $import['comments'] = [];
 
+    // TODO add comments for assignee and link changes from changelog
+
     if (isset($issue['fields']['comment']) && count($issue['fields']['comment']['comments']) > 0) {
-        foreach ($issue['fields']['comment']['comments'] as $comment) {
+        $commentsLastIndex = count($issue['fields']['comment']['comments']) - 1;
+        $commentIndexesLength = strlen("$commentsLastIndex");
+        foreach ($issue['fields']['comment']['comments'] as $commentIndex => $comment) {
+            $commentFile = sprintf("$issueKey-comment-%0{$commentIndexesLength}d.txt", $commentIndex);
             $import['comments'][] = [
                 // TODO: WK this looks wrong. Replacing the time zone with 'Z', UTC+0000.
                 // Probably simply need to remove the seconds fraction
@@ -105,7 +121,7 @@ foreach ($issueIds as $issueId) {
                 'body' => sprintf(
                     "Comment created by %s:\n\n%s",
                     mentionName($comment['author']['key']),
-                    toMarkdown($comment['body'])
+                    exportAndMarkdown($j2mDir, $commentFile, $comment['body'])
                 ),
             ];
         }
