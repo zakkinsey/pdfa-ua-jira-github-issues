@@ -26,6 +26,8 @@ function toMarkdown($text) {
         $converted = '';
     }
 
+    $converted = preg_replace('/{color(:#[\da-f]+)?}/', '', $converted);
+
     $codeBlockMarker = 'jira2githubMarkdown';
     $codeBlocks = [];
     $converted = preg_replace_callback(
