@@ -74,7 +74,7 @@ foreach ($issueIds as $issueId) {
             'title' => sprintf('%s: %s', $issueKey, $issue['fields']['summary']),
             'body' => sprintf(
                 "Jira issue originally created by user %s:\n\n%s",
-                mentionName($issue['fields']['creator']['key']),
+                mentionName($issue['fields']['creator']),
                 exportAndMarkdown($j2mDir, "$issueKey.txt", $issue['fields']['description'])
             ),
             'created_at' => fixTimestamp($issue['fields']['created']),
@@ -118,7 +118,7 @@ foreach ($issueIds as $issueId) {
                 'created_at' => fixTimestamp($comment['created']),
                 'body' => sprintf(
                     "Comment created by %s:\n\n%s",
-                    mentionName($comment['author']['key']),
+                    mentionName($comment['author']),
                     exportAndMarkdown($j2mDir, $commentFile, $comment['body'])
                 ),
             ];
@@ -175,7 +175,8 @@ function fixTimestamp($jiraTimestamp) {
     return $retVal;
 }
 
-function mentionName($name) {
+function mentionName($author) {
+    $name = $author['key'];
     global $knownAssigneesMap;
 
     if (isset($knownAssigneesMap[$name])) {
