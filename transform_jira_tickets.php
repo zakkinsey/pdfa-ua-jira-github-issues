@@ -48,6 +48,17 @@ $j2mDir = "$projectDataTag/j2m";
 @mkdir(getDirTxtJiraFormat(    $j2mDir), 0777);
 @mkdir(getDirTxtGithubMarkdown($j2mDir), 0777);
 
+$usersMap = [];
+$usersTSV = file_get_contents("$dataDir/users.tsv");
+foreach (preg_split('/\n/', $usersTSV, -1, PREG_SPLIT_NO_EMPTY) as $userTsvLine) {
+    $tsvValues = preg_split('/\t/', $userTsvLine);
+    $usersMap[$tsvValues[2]] = [
+        'name' => $tsvValues[0],
+        'email' => $tsvValues[1],
+        'githubUser' => $tsvValues[3],
+    ];
+}
+
 $files = scandir($jiraExportDir);
 
 if (isset($argv[2])) {
@@ -74,7 +85,7 @@ foreach ($issueIds as $issueId) {
             'title' => sprintf('%s: %s', $issueKey, $issue['fields']['summary']),
             'body' => sprintf(
                 "Jira issue originally created by user %s:\n\n%s",
-                mentionName($issue['fields']['creator']),
+                mentionName($usersMap, $issue['fields']['creator']),
                 exportAndMarkdown($j2mDir, "$issueKey.txt", $issue['fields']['description'])
             ),
             'created_at' => fixTimestamp($issue['fields']['created']),
@@ -118,7 +129,7 @@ foreach ($issueIds as $issueId) {
                 'created_at' => fixTimestamp($comment['created']),
                 'body' => sprintf(
                     "Comment created by %s:\n\n%s",
-                    mentionName($comment['author']),
+                    mentionName($usersMap, $comment['author']),
                     exportAndMarkdown($j2mDir, $commentFile, $comment['body'])
                 ),
             ];
@@ -175,12 +186,54 @@ function fixTimestamp($jiraTimestamp) {
     return $retVal;
 }
 
-function mentionName($author) {
-    $name = $author['key'];
-    global $knownAssigneesMap;
+function mentionName($usersMap, $author) {
+    //$line = sprintf("%s\t%s\t%s\n", $author['displayName'], $author['name'], $author['key']);
+    //file_put_contents("data/users.txt", $line, FILE_APPEND);
 
-    if (isset($knownAssigneesMap[$name])) {
-        return '@' . $knownAssigneesMap[$name];
+    $mention = null;
+    $userMap = null;
+
+    if (is_array($author)) {
+        if (isset($usersMap[$author['name']])) {
+            $userMap = $usersMap[$author['name']];
+        } else if (isset($usersMap[$author['key']])) {
+            $userMap = $usersMap[$author['key']];
+        }
+    } else if (is_string($author)) {
+        if (isset($usersMap[$author])) {
+            $userMap = $usersMap[$author];
+        }
     }
-    return $name;
+
+    if ($userMap != null) {
+        if (isset($userMap['githubUser']) && strlen($userMap['githubUser']) > 0) {
+            $mention = '@' . $userMap['githubUser'];
+        } else if (isset($userMap['name'])) {
+            if (isset($userMap['email'])) {
+                $mention = $userMap['name'] . " <" . $userMap['email'] . ">";
+            } else {
+                $mention = $userMap['name'];
+            }
+        } else if (isset($userMap['email'])) {
+            $mention = $userMap['email'];
+        }
+    }
+
+    if ($mention == null) {
+        if (is_array($author)) {
+            if (isset($author['displayName'])) {
+                $mention = $author['displayName'] . " (" . $author['name'] . ")";
+            } else if (isset($author['name'])) {
+                $mention = "JIRA user " . $author['name'];
+            } else if (isset($author['name'])) {
+                $mention = "JIRA user " . $author['key'];
+            } else {
+                $mention = "unknown JIRA user ";
+            }
+        } else {
+            $mention = "JIRA user " . $author;
+        }
+    }
+
+    return $mention;
 }
