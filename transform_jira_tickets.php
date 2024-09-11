@@ -125,11 +125,11 @@ foreach ($issueIds as $issueId) {
             $commentFile = sprintf("$issueKey-comment-%0{$commentIndexesLength}d.txt", $commentIndex);
             $import['comments'][] = [
                 'created_at' => fixTimestamp($comment['created']),
-                'body' => sprintf(
+                'body' => exportAndMarkdown($j2mDir, $commentFile, sprintf(
                     "Comment created by %s:\n\n%s",
                     mentionName($usersMap, $comment['author']),
-                    exportAndMarkdown($j2mDir, $commentFile, $comment['body'])
-                ),
+                    $comment['body']
+                )),
             ];
         }
     }
