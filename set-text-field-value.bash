@@ -24,7 +24,7 @@ mutation {
       itemId: "'"$itemId"'"
       fieldId: "'"$fieldId"'"
       value: {
-        text: "'"$value"'"
+        text: """'"$value"'"""
       }
     }
   ) {
