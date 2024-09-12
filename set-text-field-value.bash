@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [ -z "$4" ] ; then
-	echo 'Error: missing parameter'
-	echo 'Usage: '"$(basename "$0")"' <project-node-id> <item-node-id> <field-node-id> <value>'
-	exit 1
+    echo 'Error: missing parameter'
+    echo 'Usage: '"$(basename "$0")"' <project-node-id> <item-node-id> <field-node-id> <value>'
+    exit 1
 fi
 
 set -eu
@@ -24,7 +24,7 @@ mutation {
       itemId: "'"$itemId"'"
       fieldId: "'"$fieldId"'"
       value: {
-      	text: "'"$value"'"
+        text: "'"$value"'"
       }
     }
   ) {
