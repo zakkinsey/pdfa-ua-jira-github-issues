@@ -269,6 +269,8 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
 //        print_r($issue);
         $fields = $issue['fields'];
 
+        $allFields = [];
+
         if ($fields != null) {
             foreach ($fieldKeysMap as $fieldName => $fieldKey) {
                 $fieldNodeId = $fieldIds[$fieldName];
@@ -339,6 +341,7 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
                                 printf("\n");
                                 sleep(1);
                             }
+                            $allFields[$fieldName] = $value;
                         }
                     } else {
                         //printf("\t$fieldName is null\n");
@@ -346,7 +349,9 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
                 } else {
                     //printf("\t$fieldName is not set\n");
                 }
+
             }
+            print_r(json_encode($allFields, JSON_PRETTY_PRINT));
         }
     }
 
