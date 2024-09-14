@@ -159,6 +159,7 @@ $fieldNamesToMigrate = [
 //    "Milestone",
 //    "Repository",
 //    "Reviewers",
+    "Description",
     "Component/s",
     "Example type",
     "PDF/UA Parts",
@@ -321,7 +322,7 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
                             printf("\n\n");
                         }
                         if (isset($value) && $value != null && $value != '') {
-                            if ($fieldName == 'Tests') {
+                            if ($fieldName == 'Tests' || $fieldName == 'Description') {
                                 $value = toMarkdown($value);
                                 $sq = "'";
                                 $dq = '"';
