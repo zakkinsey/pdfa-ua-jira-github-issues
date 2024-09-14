@@ -329,6 +329,7 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
                                 $sq = "'";
                                 $dq = '"';
                                 $value = preg_replace("/'/", "$sq$dq$sq$dq$sq", $value);
+                                $setFieldCmd = "./set-text-field-value.bash $projectNodeId $itemNodeId $fieldNodeId '$value'";
                             } else {
                                 if (isset($optionIds[$fieldName])) {
                                     $optionId = $optionIds[$fieldName][$value];
@@ -336,12 +337,12 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
                                 } else {
                                     $setFieldCmd = "./set-text-field-value.bash $projectNodeId $itemNodeId $fieldNodeId '$value'";
                                 }
-                                printf("\t\t$setFieldCmd\n");
-                                print_r(shell_exec($setFieldCmd));
-                                printf("\n");
-                                sleep(1);
                             }
                             $allFields[$fieldName] = $value;
+                            printf("\t\t$setFieldCmd\n");
+                            print_r(shell_exec($setFieldCmd));
+                            printf("\n");
+                            sleep(1);
                         }
                     } else {
                         //printf("\t$fieldName is null\n");
