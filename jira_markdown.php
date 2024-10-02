@@ -9,6 +9,7 @@ function getDirTxtGithubMarkdown($j2mDir) {
 }
 
 function exportAndMarkdown($j2mDir, $file, $jfText) {
+	$file = preg_replace('/:/', '-', $file);
     $jfDir = getDirTxtJiraFormat(    $j2mDir);
     $mdDir = getDirTxtGithubMarkdown($j2mDir);
 
