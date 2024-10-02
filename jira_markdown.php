@@ -56,7 +56,7 @@ function toMarkdown($text) {
         return "\n" . preg_replace('/^/m', '>', $matches[1]) . "\n";
     }, $converted);
 
-    $converted = preg_replace_callback('/^([-*#]*)([-*#]) /m', function ($matches) {
+    $converted = preg_replace_callback('/^[\t ]*([-*#]*)([-*#]) /m', function ($matches) {
         $indent = ' ';
         foreach(str_split($matches[1]) as $char){
             if ($char == '#') {
