@@ -52,6 +52,7 @@ sort($issueIds);
 
 $count = 0;
 for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
+#for ($issueId = 17; $issueId <= 17; $issueId++) {
     $issueKey = $project . '-' . $issueId;
     $file = "$projectDataTag/$issueKey.json";
 
@@ -73,6 +74,8 @@ for ($issueId = 1; $issueId <= $maxIssueId; $issueId++) {
         if ($issueCreated) {
             // TODO: delete fake issue
             // for the instant purpose, deleting fake issues manually is fine
+        } else {
+            exit(1);
         }
     }
 
@@ -86,6 +89,7 @@ function createIssue($client, $githubImportUrl, $githubHeaders, $issue) {
         $deleteIssue = $issue['deleteIssue'];
         unset($issue['deleteIssue']);
     }
+    printf("$githubImportUrl\n");
     printf("Creating issue $issueKey... ");
 
     $response = $client->post($githubImportUrl, $githubHeaders, json_encode($issue));
@@ -93,8 +97,13 @@ function createIssue($client, $githubImportUrl, $githubHeaders, $issue) {
 
     if ($response->getStatusCode() >= 400) {
         printf("Error posting $issueKey:\n");
-        print_r($response);
-        print_r($ticketStatus);
+        print_r([
+            '$githubImportUrl' => $githubImportUrl,
+            '$githubHeaders' => $githubHeaders,
+            '$issue' => $issue,
+            '$response' => $response,
+            '$ticketStatus' => $ticketStatus,
+        ]);
         return false;
     }
 
