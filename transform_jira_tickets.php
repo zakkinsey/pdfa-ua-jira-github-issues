@@ -310,13 +310,34 @@ foreach ($issueIds as $issueId) {
     $issueCreatorName = $issue['fields']['creator']['name'];
     $issueCreatorMention = mentionName($usersMap, $issue['fields']['creator']);
 
+    $issueNum = 0 + $issueId;
+    $issueRelativeDir = sprintf(
+        "wip/ua-%02dxx/ua-%03dx/ua-%04d",
+        $issueNum / 100,
+        $issueNum / 10,
+        $issueNum
+    );
+
     //print_r($issue);
+    if (false) {
+        print_r([
+            '$issueId' => $issueId,
+            '$issueNum' => $issueNum,
+            '$issueRelativeDir' => $issueRelativeDir,
+        ]);
+    }
     $import = [
         'jiraKey' => $issueKey,
         'issue' => [
             'title' => $issue['fields']['summary'],
             'body' => sprintf(
-                "Jira issue originally created by %s:\n\n%s",
+                (""
+                    . "Issue directory in GitHub at time migration from Jira: [/$issueRelativeDir](../tree/main/$issueRelativeDir) \n\n"
+                    . "Jira issue originally created by %s. The final version of the description at the time of migration from Jira is below. For the history of changes to the description, see `description.md` in issue directory.\n"
+                    . "\n"
+                    . "---\n"
+                    . "%s"
+                ),
                 $issueCreatorMention,
                 exportAndMarkdown($j2mDir, "$issueKey.txt", $issue['fields']['description'])
             ),
