@@ -878,7 +878,7 @@ foreach ($history as $timestamp => $simultaneousItems) {
                             $clonedIssueNum
                         );
                         $info = readInfo($clonedIssueDir);
-                        $info = array_merge($historyItem);
+                        $info = array_merge($info, $historyItem);
                         $message = "Cloned data from issue #$clonedIssueNum to issue #$issueNum";
                     } else {
                     }
