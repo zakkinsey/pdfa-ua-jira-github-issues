@@ -779,7 +779,7 @@ $attachmentFilenames = [];
 
 $gitCommitCount = 0;
 
-$history = [];
+//$history = [];
 foreach ($history as $timestamp => $simultaneousItems) {
     //printf("$timestamp\n");
 
