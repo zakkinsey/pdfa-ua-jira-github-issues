@@ -277,6 +277,27 @@ $fieldValueRenames = [
             "to"    => "Reported",
         ],
     ],
+    '2022-12-31T00:00:00Z' => [
+        'william.kilian@targetstream.com' => [
+            "field" => "RenameValuesOn:Structure Types",
+            "from"  => "List elements",
+            "to"    => "L",
+        ],
+    ],
+    '2022-12-31T01:00:00Z' => [
+        'william.kilian@targetstream.com' => [
+            "field" => "RenameValuesOn:Structure Types",
+            "from"  => "Table elements",
+            "to"    => "Table",
+        ],
+    ],
+    '2022-12-31T02:00:00Z' => [
+        'william.kilian@targetstream.com' => [
+            "field" => "RenameValuesOn:Structure Types",
+            "from"  => "TOC elements",
+            "to"    => "TOC",
+        ],
+    ],
 ];
 
 foreach ($fieldValueRenames as $timestamp => $renameItems) {
