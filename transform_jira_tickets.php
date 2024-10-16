@@ -603,6 +603,10 @@ foreach ($issueIds as $issueId) {
                 $attachmentsState[$issueKey][$filename][$id] = true;
             }
 
+        } elseif (!isset($firstItem['from']) && !isset($firstItem['fromString'])) {
+            // initial value of field was apparently unset, unset regardless of field
+           $originalIssue[$realFieldName] = null;
+
         } elseif ($fieldName == 'Comment') {
             // ignore: goes in issue
         } elseif ($fieldName == 'Components') {
