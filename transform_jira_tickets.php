@@ -1677,6 +1677,35 @@ foreach ($history as $timestamp => $simultaneousItems) {
     }
 }
 
+if (true) {
+    // remove parenthetical information from Structure Type values
+    foreach ($issueIds as $issueId) {
+        $issueKey = $project . '-' . $issueId;
+        $issueNum = $issueId;
+        $issueDir = sprintf(
+            "%s/wip/ua-%02dxx/ua-%03dx/ua-%04d",
+            $gitRepoDir,
+            $issueNum / 100,
+            $issueNum / 10,
+            $issueNum
+        );
+        $info = readInfo($issueDir);
+        if (array_key_exists('Structure Types', $info)) {
+            $info['Structure Types'] = preg_replace('/ \(.*\)\s*/', '', $info['Structure Types']);
+        }
+        writeInfo($fieldsConfig, $issueDir, $info, false);
+    }
+    putenv("GIT_AUTHOR_DATE=$now");
+    putenv("GIT_COMMITTER_DATE=$now");
+
+    putenv("GIT_AUTHOR_NAME=William Kilian");
+    putenv("GIT_COMMITTER_NAME=William Kilian");
+
+    putenv("GIT_AUTHOR_EMAIL=william.kilian@targetstream.com");
+    putenv("GIT_COMMITTER_EMAIL=william.kilian@targetstream.com");
+    gitCommit($gitRepoDir, $gitCommitCount, 'Remove parentheticals from Structure Type values');
+}
+
 if (false) {
     // rewrite technique-info.yaml files with comments
     foreach ($issueIds as $issueId) {
