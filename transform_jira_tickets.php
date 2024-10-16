@@ -550,10 +550,62 @@ foreach ($issueIds as $issueId) {
     ];
 
     foreach ($issueHistory as $fieldName => $fieldItems) {
+        $realFieldName = getFieldNameAtTime($fieldRenamesReverse, $fieldName, $issueCreatedUnixTime);
+
+        $valuesRequireReverseReplay = [
+            'Component',
+            'Components'
+        ];
+        if (in_array($realFieldName, $valuesRequireReverseReplay)) {
+            $valueIsArray =[
+                'Component',
+                'Components'
+            ];
+
+            // set value to final value from issue
+            $value = in_array($realFieldName, $valueIsArray) ? [] : null;
+            if ($realFieldName == 'Component' || $realFieldName == 'Components') {
+                foreach ($issue['fields']['components'] as $valueItem) {
+                    $value[$valueItem['name']] = true;
+                }
+            }
+
+            // replace history in reverse to determine initial value
+            krsort($fieldItems);
+            $firstItem = reset($fieldItems);
+            $itemsTimestamp = key($fieldItems);
+            foreach ($fieldItems as $itemsTimestamp => $simultaneousFieldItems) {
+                foreach($simultaneousFieldItems as $fieldItem) {
+                    if (false) {
+                    } elseif ($realFieldName == 'Component' || $realFieldName == 'Components') {
+                        if (false) {
+                        } elseif (isset($fieldItem['fromString'])) {
+                            // history item removes value, so add for reverse operation
+                            $value[$fieldItem['fromString']] = true;
+                        } elseif (isset($fieldItem['toString'])) {
+                            // history item adds value, so remove for reverse operation
+                            unset($value[$fieldItem['toString']]);
+                        } else {
+                            printf("Weird $fieldName ($realFieldName) item at $itemsTimestamp in $issueKey:\n");
+                            print_r($fieldItem);
+                        }
+                    }
+                }
+            }
+
+            // normalize value
+            if ($realFieldName == 'Component' || $realFieldName == 'Components') {
+                $value = array_keys($value);
+                sort($value);
+            }
+
+            $originalIssue[$realFieldName] = $value;
+        }
+
+
         ksort($fieldItems);
         $firstItem = reset($fieldItems);
         $itemsTimestamp = key($fieldItems);
-        $realFieldName = getFieldNameAtTime($fieldRenamesReverse, $fieldName, $issueCreatedUnixTime);
 
         if (!in_array($fieldName, $expectMultipleItemsFields)) {
             if (count($firstItem) == 1) {
@@ -629,7 +681,7 @@ foreach ($issueIds as $issueId) {
         } elseif ($fieldName == 'Comment') {
             // ignore: goes in issue
         } elseif ($fieldName == 'Components') {
-            // ignore: manual inspection confirms this was not initially set for any extent issues
+            // ignore: handled above
         } elseif ($fieldName == 'Reporter') {
             // ignore: manual inspection confirms this was not used for anything meaningful beyond creator
         } elseif ($fieldName == 'Workflow') {
@@ -703,6 +755,8 @@ foreach ($issueIds as $issueId) {
                 // ignore, handled specially elsewhere
             } elseif ($fieldName == 'Comment') {
                 // ignore, handled specially elsewhere
+            } elseif ($fieldName == 'Components') {
+                // ignore, handled specially elsewhere
             } elseif ($fieldName == 'Created') {
                 // ignore, handled specially elsewhere
             } elseif ($fieldName == 'Creator') {
@@ -738,12 +792,6 @@ foreach ($issueIds as $issueId) {
 
             } elseif ($fieldName == 'AT support') {
                 $originalIssue[$realFieldName] = $fieldItem;
-            } elseif ($fieldName == 'Components') {
-                $values = [];
-                foreach ($fieldItem as $valueItem) {
-                    $values[] = $valueItem['name'];
-                }
-                $originalIssue[$realFieldName] = $values;
             } elseif ($fieldName == 'Example type') {
                 $originalIssue[$realFieldName] = $fieldItem['value'];
             } elseif ($fieldName == 'Matterhorn Protocol') {
