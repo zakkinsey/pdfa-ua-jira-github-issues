@@ -623,7 +623,7 @@ foreach ($issueIds as $issueId) {
         } elseif ($fieldName == 'Flagged') {
             $originalIssue[$realFieldName] = $firstItem['fromString'];
         } elseif ($fieldName == 'Keywords') {
-            $originalIssue[$realFieldName] = $firstItem['fromString'];
+            $originalIssue[$realFieldName] = preg_split('/ +/', $firstItem['fromString']);
         } elseif ($fieldName == 'Marked-content sequences') {
             $originalIssue[$realFieldName] = $firstItem['fromString'];
         } elseif ($fieldName == 'Matterhorn Protocol') {
@@ -645,7 +645,7 @@ foreach ($issueIds as $issueId) {
         } elseif ($fieldName == 'UA Technique Tag') {
             $originalIssue[$realFieldName] = $firstItem['fromString'];
         } elseif ($fieldName == 'Use cases') {
-            $originalIssue[$realFieldName] = $firstItem['fromString'];
+            $originalIssue[$realFieldName] = preg_split('/ +/', $firstItem['fromString']);
         } elseif ($fieldName == 'WCAG 2.1 SC') {
             $originalIssue[$realFieldName] = $firstItem['fromString'];
         } elseif ($fieldName == 'WCAG 2.1 Success Criteria') {
@@ -1314,7 +1314,7 @@ foreach ($history as $timestamp => $simultaneousItems) {
                     $issueInfo[$realFieldName] = $historyItem['toString'];
                     $commitItems++;
                 } elseif ($fieldName == 'Keywords') {
-                    $issueInfo[$realFieldName] = $historyItem['toString'];
+                    $issueInfo[$realFieldName] = preg_split('/ +/', $historyItem['toString']);
                     $commitItems++;
                 } elseif ($fieldName == 'Marked-content sequences') {
                     $issueInfo[$realFieldName] = $historyItem['toString'];
@@ -1344,7 +1344,7 @@ foreach ($history as $timestamp => $simultaneousItems) {
                     $issueInfo[$realFieldName] = $historyItem['toString'];
                     $commitItems++;
                 } elseif ($fieldName == 'Use cases') {
-                    $issueInfo[$realFieldName] = $historyItem['toString'];
+                    $issueInfo[$realFieldName] = preg_split('/ +/', $historyItem['toString']);
                     $commitItems++;
                 } elseif ($fieldName == 'WCAG 2.1 Success Criteria') {
                     $issueInfo[$realFieldName] = $historyItem['toString'];
