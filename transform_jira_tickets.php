@@ -234,6 +234,23 @@ $fieldRenames = [
 ];
 $fieldRenamesReverse = array_reverse($fieldRenames);
 
+function getFieldNameAtTime($fieldRenamesReverse, $fieldName, $unixTime) {
+    foreach ($fieldRenamesReverse as $renameTimeStamp => $renameItems) {
+        foreach ($renameItems as $renameItem) {
+            $renameUnixTime = (new DateTimeImmutable($renameTimeStamp))->getTimestamp();
+            if ($unixTime < $renameTimeStamp) {
+                $renameFrom = $renameItem['from'];
+                $renameTo = $renameItem['to'];
+                if ($renameTo == $fieldName) {
+                    $fieldName = $renameFrom;
+                }
+            }
+        }
+    }
+
+    return $fieldName;
+}
+
 $history = [];
 $fieldFinalNames = [];
 $fieldAllNames = [];
@@ -517,7 +534,7 @@ foreach ($issueIds as $issueId) {
         ksort($fieldItems);
         $firstItem = reset($fieldItems);
         $itemsTimestamp = key($fieldItems);
-        $realFieldName = $fieldName;
+        $realFieldName = getFieldNameAtTime($fieldRenamesReverse, $fieldName, $issueCreatedUnixTime);
 
         if (!in_array($fieldName, $expectMultipleItemsFields)) {
             if (count($firstItem) == 1) {
@@ -650,16 +667,105 @@ foreach ($issueIds as $issueId) {
 
     }
 
-    foreach ($fieldRenamesReverse as $renameTimeStamp => $renameItems) {
-        foreach ($renameItems as $renameItem) {
-            $renameUnixTime = (new DateTimeImmutable($renameTimeStamp))->getTimestamp();
-            if ($issueCreatedUnixTime < $renameTimeStamp) {
-                $renameFrom = $renameItem['from'];
-                $renameTo = $renameItem['to'];
-                if (array_key_exists($renameTo, $originalIssue)) {
-                    $originalIssue[$renameFrom] = $originalIssue[$renameTo];
-                    unset($originalIssue[$renameTo]);
+    foreach ($issue['fields'] as $fieldName => $fieldItem) {
+        if (isset($fieldNamesMap[$fieldName])) {
+            $fieldName = $fieldNamesMap[$fieldName];
+        }
+        $realFieldName = getFieldNameAtTime($fieldRenamesReverse, $fieldName, $issueCreatedUnixTime);
+        if (isset($fieldItem) && !array_key_exists($realFieldName, $originalIssue)) {
+            if (false) {
+            } elseif ($fieldName == 'Assignee') {
+                // ignore, handled specially elsewhere
+            } elseif ($fieldName == 'Attachment') {
+                // ignore, handled specially elsewhere
+            } elseif ($fieldName == 'Comment') {
+                // ignore, handled specially elsewhere
+            } elseif ($fieldName == 'Created') {
+                // ignore, handled specially elsewhere
+            } elseif ($fieldName == 'Creator') {
+                // ignore, handled specially elsewhere
+            } elseif ($fieldName == 'Development') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Issue Type') {
+                // ignore, always Example and no equivalent in output
+            } elseif ($fieldName == 'Last Viewed') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Linked Issues') {
+                // ignore, handled specially elsewhere
+            } elseif ($fieldName == 'Progress') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Project') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Rank') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Reporter') {
+                // ignore, handled specially elsewhere
+            } elseif ($fieldName == 'Sub-Tasks') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Updated') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Votes') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Watchers') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Work Ratio') {
+                // ignore, jira-only thing
+            } elseif ($fieldName == 'Σ Progress') {
+                // ignore, jira-only thing
+
+            } elseif ($fieldName == 'AT support') {
+                $originalIssue[$realFieldName] = $fieldItem;
+            } elseif ($fieldName == 'Components') {
+                $values = [];
+                foreach ($fieldItem as $valueItem) {
+                    $values[] = $valueItem['name'];
                 }
+                $originalIssue[$realFieldName] = $values;
+            } elseif ($fieldName == 'Example type') {
+                $originalIssue[$realFieldName] = $fieldItem['value'];
+            } elseif ($fieldName == 'Matterhorn Protocol') {
+                $values = [];
+                foreach ($fieldItem as $valueItem) {
+                    $values[] = $valueItem['value'];
+                }
+                $originalIssue[$realFieldName] = $values;
+            } elseif ($fieldName == 'Pass / Fail') {
+                $originalIssue[$realFieldName] = $fieldItem['value'];
+            } elseif ($fieldName == 'PDF/UA Parts') {
+                $values = [];
+                foreach ($fieldItem as $valueItem) {
+                    $values[] = $valueItem['value'];
+                }
+                $originalIssue[$realFieldName] = $values;
+            } elseif ($fieldName == 'Reason') {
+                $originalIssue[$realFieldName] = $fieldItem['value'];
+            } elseif ($fieldName == 'Structure Types') {
+                $values = [];
+                foreach ($fieldItem as $valueItem) {
+                    $values[] = $valueItem['value'];
+                }
+                $originalIssue[$realFieldName] = $values;
+            } elseif ($fieldName == 'UA Technique Tag') {
+                $originalIssue[$realFieldName] = $fieldItem;
+            } elseif ($fieldName == 'Use cases') {
+                $originalIssue[$realFieldName] = $fieldItem;
+            } elseif ($fieldName == 'WCAG 2.2 PDF Technique') {
+                $originalIssue[$realFieldName] = $fieldItem['value'];
+            } elseif ($fieldName == 'WCAG 2.2 Success Criteria') {
+                $values = [];
+                foreach ($fieldItem as $valueItem) {
+                    $values[] = $valueItem['value'];
+                }
+                $originalIssue[$realFieldName] = $values;
+
+            } elseif (preg_match('/hecke/', $fieldName)) {
+                $originalIssue[$realFieldName] = preg_replace('/\.000/', '', $fieldItem);
+
+            } else {
+                print("} elseif (\$fieldName == '$fieldName') {\n");
+                printf("$issueKey\t$fieldName\n");
+                print_r($fieldItem);
+                printf("\n\n");
             }
         }
     }
