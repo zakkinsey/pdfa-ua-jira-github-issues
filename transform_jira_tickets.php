@@ -879,6 +879,9 @@ foreach ($history as $timestamp => $simultaneousItems) {
                         );
                         $info = readInfo($clonedIssueDir);
                         $info = array_merge($info, $historyItem);
+                        unset($info['Related issues']);
+                        unset($info['Duplicates issues']);
+                        unset($info['Blocking issues']);
                         $message = "Cloned data from issue #$clonedIssueNum to issue #$issueNum";
                     } else {
                     }
