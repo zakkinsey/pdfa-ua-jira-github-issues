@@ -268,6 +268,25 @@ foreach ($fieldRenames as $timestamp => $renameItems) {
         }
     }
 }
+
+$fieldValueRenames = [
+    '2019-02-16T00:00:00Z' => [
+        'william.kilian@targetstream.com' => [
+            "field" => "RenameValuesOn:Status",
+            "from"  => "Input/Correction",
+            "to"    => "Reported",
+        ],
+    ],
+];
+
+foreach ($fieldValueRenames as $timestamp => $renameItems) {
+    foreach ($renameItems as $authorName => $renameItem) {
+        for ($i = 1; $i < 300; $i++) {
+            $history[$timestamp][$authorName]["PDFUA-$i"][] = $renameItem;
+        }
+    }
+}
+
 foreach ($fieldFinalNames as $fieldOrigName => $fieldFinalName) {
     while (isset($fieldFinalNames[$fieldFinalName])) {
         $fieldFinalName = $fieldFinalNames[$fieldFinalName];
@@ -1030,6 +1049,20 @@ foreach ($history as $timestamp => $simultaneousItems) {
                     }
                     gitCommit($gitRepoDir, $gitCommitCount, $message);
                     $createdIssues++;
+
+                } elseif (str_starts_with($fieldName, 'RenameValuesOn:')) {
+                    if (is_readable("$issueDir/technique-info.yaml")) {
+                        $fieldName = preg_replace('/^RenameValuesOn:/', '', $fieldName);
+                        $info = readInfo($issueDir);
+                        $renameFrom = $historyItem['from'];
+                        if ($info[$fieldName] == $renameFrom) {
+                            $renameTo = $historyItem['to'];
+                            $info[$fieldName] = $renameTo;
+                            writeInfo($fieldsConfig, $issueDir, $info, false);
+                            $commitMessages[$issueKey][] = sprintf("Rename %s value for $fieldName to %s", maybeQuote($renameFrom), maybeQuote($renameTo));
+                            $commitItems++;
+                        }
+                    }
 
                 } elseif ($fieldName == 'RenameField') {
                     if (is_readable("$issueDir/technique-info.yaml")) {
