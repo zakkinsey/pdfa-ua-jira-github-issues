@@ -1813,11 +1813,13 @@ if (true) {
             $issueNum / 10,
             $issueNum
         );
-        $info = readInfo($issueDir);
-        if (array_key_exists('Structure Types', $info)) {
-            $info['Structure Types'] = preg_replace('/ \(.*\)\s*/', '', $info['Structure Types']);
+        if (is_file("$issueDir/technique-info.yaml")) {
+            $info = readInfo($issueDir);
+            if (array_key_exists('Structure Types', $info)) {
+                $info['Structure Types'] = preg_replace('/ \(.*\)\s*/', '', $info['Structure Types']);
+            }
+            writeInfo($fieldsConfig, $issueDir, $info, false);
         }
-        writeInfo($fieldsConfig, $issueDir, $info, false);
     }
     putenv("GIT_AUTHOR_DATE=$now");
     putenv("GIT_COMMITTER_DATE=$now");
