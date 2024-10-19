@@ -578,7 +578,7 @@ foreach ($issueIds as $issueId) {
             'Components'
         ];
         if (in_array($realFieldName, $valuesRequireReverseReplay)) {
-            $valueIsArray =[
+            $valueIsArray = [
                 'Component',
                 'Components'
             ];
@@ -593,8 +593,6 @@ foreach ($issueIds as $issueId) {
 
             // replace history in reverse to determine initial value
             krsort($fieldItems);
-            $firstItem = reset($fieldItems);
-            $itemsTimestamp = key($fieldItems);
             foreach ($fieldItems as $itemsTimestamp => $simultaneousFieldItems) {
                 foreach($simultaneousFieldItems as $fieldItem) {
                     if (false) {
@@ -622,7 +620,6 @@ foreach ($issueIds as $issueId) {
 
             $originalIssue[$realFieldName] = $value;
         }
-
 
         ksort($fieldItems);
         $firstItem = reset($fieldItems);
@@ -813,6 +810,12 @@ foreach ($issueIds as $issueId) {
 
             } elseif ($fieldName == 'AT support') {
                 $originalIssue[$realFieldName] = $fieldItem;
+            } elseif ($fieldName == 'Components') {
+                $values = [];
+                foreach ($fieldItem as $valueItem) {
+                    $values[] = $valueItem['name'];
+                }
+                $originalIssue[$realFieldName] = $values;
             } elseif ($fieldName == 'Example type') {
                 $originalIssue[$realFieldName] = $fieldItem['value'];
             } elseif ($fieldName == 'Matterhorn Protocol') {
