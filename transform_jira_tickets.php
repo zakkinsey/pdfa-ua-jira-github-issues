@@ -1124,12 +1124,27 @@ foreach ($history as $timestamp => $simultaneousItems) {
                         $fieldName = preg_replace('/^RenameValuesOn:/', '', $fieldName);
                         $info = readInfo($issueDir);
                         $renameFrom = $historyItem['from'];
-                        if ($info[$fieldName] == $renameFrom) {
+                        if (array_key_exists($fieldName, $info)) {
                             $renameTo = $historyItem['to'];
-                            $info[$fieldName] = $renameTo;
-                            writeInfo($fieldsConfig, $issueDir, $info, false);
-                            $commitMessages[$issueKey][] = sprintf("Rename %s value for $fieldName to %s", maybeQuote($renameFrom), maybeQuote($renameTo));
-                            $commitItems++;
+                            $oldValues = $info[$fieldName];
+                            if (is_array($info[$fieldName])) {
+                                $newValues = [];
+                                foreach ($oldValues as $oldValue) {
+                                    $newValues[] = $oldValue == $renameFrom ? $renameTo : $oldValue;
+                                }
+
+                                if ($newValues != $oldValues) {
+                                    $info[$fieldName] = $newValues;
+                                    writeInfo($fieldsConfig, $issueDir, $info, false);
+                                    $commitMessages[$issueKey][] = sprintf("Rename %s value for $fieldName to %s", maybeQuote($renameFrom), maybeQuote($renameTo));
+                                    $commitItems++;
+                                }
+                            } elseif ($oldValues == $renameFrom) {
+                                $info[$fieldName] = $renameTo;
+                                writeInfo($fieldsConfig, $issueDir, $info, false);
+                                $commitMessages[$issueKey][] = sprintf("Rename %s value for $fieldName to %s", maybeQuote($renameFrom), maybeQuote($renameTo));
+                                $commitItems++;
+                            }
                         }
                     }
 
