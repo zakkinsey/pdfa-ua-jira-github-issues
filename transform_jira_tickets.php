@@ -774,8 +774,6 @@ foreach ($issueIds as $issueId) {
                 // ignore, handled specially elsewhere
             } elseif ($fieldName == 'Comment') {
                 // ignore, handled specially elsewhere
-            } elseif ($fieldName == 'Components') {
-                // ignore, handled specially elsewhere
             } elseif ($fieldName == 'Created') {
                 // ignore, handled specially elsewhere
             } elseif ($fieldName == 'Creator') {
