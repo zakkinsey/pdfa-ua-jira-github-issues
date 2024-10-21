@@ -571,6 +571,8 @@ foreach ($issueIds as $issueId) {
     ];
 
     foreach ($issueHistory as $fieldName => $fieldItems) {
+        ksort($fieldItems);
+
         $realFieldName = getFieldNameAtTime($fieldRenamesReverse, $fieldName, $issueCreatedUnixTime);
 
         $valuesRequireReverseReplay = [
@@ -592,8 +594,7 @@ foreach ($issueIds as $issueId) {
             }
 
             // replace history in reverse to determine initial value
-            krsort($fieldItems);
-            foreach ($fieldItems as $itemsTimestamp => $simultaneousFieldItems) {
+            foreach (array_reverse($fieldItems) as $itemsTimestamp => $simultaneousFieldItems) {
                 foreach($simultaneousFieldItems as $fieldItem) {
                     if (false) {
                     } elseif ($realFieldName == 'Component' || $realFieldName == 'Components') {
@@ -621,7 +622,6 @@ foreach ($issueIds as $issueId) {
             $originalIssue[$realFieldName] = $value;
         }
 
-        ksort($fieldItems);
         $firstItem = reset($fieldItems);
         $itemsTimestamp = key($fieldItems);
 
