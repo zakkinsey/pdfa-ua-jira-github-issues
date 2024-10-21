@@ -692,14 +692,15 @@ foreach ($issueIds as $issueId) {
                 $attachmentsState[$issueKey][$filename][$id] = true;
             }
 
+        } elseif ($fieldName == 'Components') {
+            // ignore: handled above
+
         } elseif (!isset($firstItem['from']) && !isset($firstItem['fromString'])) {
             // initial value of field was apparently unset, unset regardless of field
-           $originalIssue[$realFieldName] = null;
+            $originalIssue[$realFieldName] = null;
 
         } elseif ($fieldName == 'Comment') {
             // ignore: goes in issue
-        } elseif ($fieldName == 'Components') {
-            // ignore: handled above
         } elseif ($fieldName == 'Reporter') {
             // ignore: manual inspection confirms this was not used for anything meaningful beyond creator
         } elseif ($fieldName == 'Workflow') {
